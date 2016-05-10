@@ -4,10 +4,11 @@ This repository is for the development of a IETF draft for the yang-push
 
 # Links
 
-* IETF RFC5277bis: https://tools.ietf.org/html/draft-gonzalez-netconf-5277bis-00* IETF NetConf YANG-PUSH: https://tools.ietf.org/html/draft-ietf-netconf-yang-push-02
+* IETF RFC5277bis:                https://tools.ietf.org/html/draft-gonzalez-netconf-5277bis-00
+* IETF NetConf YANG-PUSH:         https://tools.ietf.org/html/draft-ietf-netconf-yang-push-02
 * IETF i2rs-pub-sub-requirements: https://tools.ietf.org/html/draft-ietf-i2rs-pub-sub-requirements-07
-* RESTCONF yang-push: https://tools.ietf.org/html/draft-voit-netconf-restconf-yang-push-02
-* Issue Tracking: https://github.com/netconf-wg/yang-push/issues
+* RESTCONF yang-push:             https://tools.ietf.org/html/draft-voit-netconf-restconf-yang-push-02
+* Issue Tracking:                 https://github.com/netconf-wg/yang-push/issues
 
 # NOTE WELL
 
