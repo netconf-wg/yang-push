@@ -11,7 +11,7 @@ This repository is for the development of a IETF draft for the yang-push
 * Issue Tracking:                 https://github.com/netconf-wg/yang-push/issues
 
 # Documents under discussion:
-draft-ietf-netconf-yang-push-03 (Work in Progress, not an I-D)
+Next revision of IETF Netconf YANG-PUSH  (Work in Progress, not an I-D) https://github.com/netconf-wg/yang-push/blob/master/draft-ietf-netconf-yang-push-03.txt
 
 # NOTE WELL
 
