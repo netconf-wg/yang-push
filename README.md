@@ -13,10 +13,12 @@ This repository is for the development of a IETF draft for the yang-push
 # Documents under discussion:
 Next revision of IETF Netconf YANG-PUSH  (WORK IN PROGRESS, NOT AN I-D)
 https://github.com/netconf-wg/yang-push/blob/master/draft-ietf-netconf-yang-push-03.txt
+Latest update posted 6/14/2016
 
 Next revision of IETF RFC5277bis (WORK IN PROGRESS, NOT AN I-D):
 https://github.com/netconf-wg/yang-push/blob/master/draft-gonzalez-netconf-5277bis-02.txt 
 (note: IETF RFC5277bis will be moved to a separate git repository)
+Latest update posted 6/14/2016
 
 # NOTE WELL
 
