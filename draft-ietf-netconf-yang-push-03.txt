@@ -5,16 +5,20 @@
 Network Working Group                                           A. Clemm
 Internet-Draft                                        A. Gonzalez Prieto
 Intended status: Standards Track                                 E. Voit
-Expires: December 4, 2016                                    A. Tripathy
+Expires: December 16, 2016                                   A. Tripathy
                                                        E. Nilsen-Nygaard
                                                            Cisco Systems
-                                                            June 2, 2016
+                                                           June 14, 2016
 
 
                Subscribing to YANG datastore push updates
                   draft-ietf-netconf-yang-push-03.txt
 
 Abstract
+
+   DISCLAIMER: WHILE THIS DOCUMENT HAS BEEN FORMATTED TO APPEAR AS AN
+   INTERNET DRAFT, THIS VERSION CONSTITUTES WORK-IN-PROGRESS AND HAS NOT
+   BEEN SUBMITTED TO THE IETF INTERNET DRAFT REPOSITORY.
 
    This document defines a subscription and push mechanism for YANG
    datastores.  This mechanism allows client applications to request
@@ -37,7 +41,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on December 4, 2016.
+   This Internet-Draft will expire on December 16, 2016.
 
 Copyright Notice
 
@@ -46,18 +50,18 @@ Copyright Notice
 
    This document is subject to BCP 78 and the IETF Trust's Legal
    Provisions Relating to IETF Documents
-   (http://trustee.ietf.org/license-info) in effect on the date of
-   publication of this document.  Please review these documents
-   carefully, as they describe your rights and restrictions with respect
-   to this document.  Code Components extracted from this document must
 
 
 
-Clemm, et al.           Expires December 4, 2016                [Page 1]
+Clemm, et al.           Expires December 16, 2016               [Page 1]
 
 Internet-Draft                  YANG-Push                      June 2016
 
 
+   (http://trustee.ietf.org/license-info) in effect on the date of
+   publication of this document.  Please review these documents
+   carefully, as they describe your rights and restrictions with respect
+   to this document.  Code Components extracted from this document must
    include Simplified BSD License text as described in Section 4.e of
    the Trust Legal Provisions and are provided without warranty as
    described in the Simplified BSD License.
@@ -77,16 +81,16 @@ Internet-Draft                  YANG-Push                      June 2016
 Table of Contents
 
    1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   3
-   2.  Definitions and Acronyms  . . . . . . . . . . . . . . . . . .   5
+   2.  Definitions and Acronyms  . . . . . . . . . . . . . . . . . .   6
    3.  Solution Overview . . . . . . . . . . . . . . . . . . . . . .   7
      3.1.  Subscription Model  . . . . . . . . . . . . . . . . . . .   8
      3.2.  Negotiation of Subscription Policies  . . . . . . . . . .  10
      3.3.  On-Change Considerations  . . . . . . . . . . . . . . . .  11
      3.4.  Data Encodings  . . . . . . . . . . . . . . . . . . . . .  12
        3.4.1.  Periodic Subscriptions  . . . . . . . . . . . . . . .  12
-       3.4.2.  On-Change Subscriptions . . . . . . . . . . . . . . .  12
+       3.4.2.  On-Change Subscriptions . . . . . . . . . . . . . . .  13
      3.5.  Subscription Filters  . . . . . . . . . . . . . . . . . .  13
-     3.6.  Push Data Stream and Transport Mapping  . . . . . . . . .  13
+     3.6.  Push Data Stream and Transport Mapping  . . . . . . . . .  14
      3.7.  Subscription management . . . . . . . . . . . . . . . . .  18
        3.7.1.  Subscription management by RPC  . . . . . . . . . . .  18
        3.7.2.  Subscription management by configuration  . . . . . .  20
@@ -102,28 +106,33 @@ Table of Contents
        subscriptions . . . . . . . . . . . . . . . . . . . . . . . .  24
      4.1.  Overview  . . . . . . . . . . . . . . . . . . . . . . . .  24
      4.2.  Update streams  . . . . . . . . . . . . . . . . . . . . .  28
-     4.3.  Filters . . . . . . . . . . . . . . . . . . . . . . . . .  28
-     4.4.  Subscription configuration  . . . . . . . . . . . . . . .  29
-     4.5.  Subscription monitoring . . . . . . . . . . . . . . . . .  31
-     4.6.  Notifications . . . . . . . . . . . . . . . . . . . . . .  31
 
 
 
-Clemm, et al.           Expires December 4, 2016                [Page 2]
+Clemm, et al.           Expires December 16, 2016               [Page 2]
 
 Internet-Draft                  YANG-Push                      June 2016
 
 
+     4.3.  Filters . . . . . . . . . . . . . . . . . . . . . . . . .  28
+     4.4.  Subscription configuration  . . . . . . . . . . . . . . .  29
+     4.5.  Subscription monitoring . . . . . . . . . . . . . . . . .  31
+     4.6.  Notifications . . . . . . . . . . . . . . . . . . . . . .  31
      4.7.  RPCs  . . . . . . . . . . . . . . . . . . . . . . . . . .  32
        4.7.1.  Establish-subscription RPC  . . . . . . . . . . . . .  32
        4.7.2.  Modify-subscription RPC . . . . . . . . . . . . . . .  34
        4.7.3.  Delete-subscription RPC . . . . . . . . . . . . . . .  36
    5.  YANG module . . . . . . . . . . . . . . . . . . . . . . . . .  36
    6.  Security Considerations . . . . . . . . . . . . . . . . . . .  50
-   7.  References  . . . . . . . . . . . . . . . . . . . . . . . . .  51
-     7.1.  Normative References  . . . . . . . . . . . . . . . . . .  51
-     7.2.  Informative References  . . . . . . . . . . . . . . . . .  51
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  52
+   7.  Issues that are currently being worked and resolved . . . . .  51
+     7.1.  Unresolved issues under discussion  . . . . . . . . . . .  51
+     7.2.  Agreement in principal  . . . . . . . . . . . . . . . . .  52
+     7.3.  Closed Issues . . . . . . . . . . . . . . . . . . . . . .  52
+   8.  Acknowledgments . . . . . . . . . . . . . . . . . . . . . . .  52
+   9.  References  . . . . . . . . . . . . . . . . . . . . . . . . .  53
+     9.1.  Normative References  . . . . . . . . . . . . . . . . . .  53
+     9.2.  Informative References  . . . . . . . . . . . . . . . . .  53
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  54
 
 1.  Introduction
 
@@ -153,6 +162,14 @@ Internet-Draft                  YANG-Push                      June 2016
 
    There are various issues associated with polling-based management:
 
+
+
+
+Clemm, et al.           Expires December 16, 2016               [Page 3]
+
+Internet-Draft                  YANG-Push                      June 2016
+
+
    o  It introduces additional load on network, devices, and
       applications.  Each polling cycle requires a separate yet arguably
       redundant request that results in an interrupt, requires parsing,
@@ -162,13 +179,6 @@ Internet-Draft                  YANG-Push                      June 2016
       be delayed or get lost, often particularly in cases when the
       network is under stress and hence exactly when the need for the
       data is the greatest.
-
-
-
-Clemm, et al.           Expires December 4, 2016                [Page 3]
-
-Internet-Draft                  YANG-Push                      June 2016
-
 
    o  Data may be difficult to calibrate and compare.  Polling requests
       may undergo slight fluctuations, resulting in intervals of
@@ -207,6 +217,15 @@ Internet-Draft                  YANG-Push                      June 2016
    applications desire the ability to stream updates using other
    transports.
 
+
+
+
+
+Clemm, et al.           Expires December 16, 2016               [Page 4]
+
+Internet-Draft                  YANG-Push                      June 2016
+
+
    Accordingly, there is a need for a service that allows client
    applications to dynamically subscribe to updates of a YANG datastore
    and that allows the server to push those updates, possibly using one
@@ -218,14 +237,6 @@ Internet-Draft                  YANG-Push                      June 2016
    This document proposes a solution.  The solution builds on top of the
    Netconf Event Model [I-D.gonzalez-netconf-5277bis] which defines a
    mechanism for the management of event subscriptions.  At its core,
-
-
-
-Clemm, et al.           Expires December 4, 2016                [Page 4]
-
-Internet-Draft                  YANG-Push                      June 2016
-
-
    the solution that is defined here introduces a new set of event
    streams including datastore push updates that clients can subscribe
    to, as well as extensions to the event subscription model that allow
@@ -264,6 +275,13 @@ Internet-Draft                  YANG-Push                      June 2016
       extensions that allow to address aspects such as how to prioritize
       between streams of updates.
 
+
+
+Clemm, et al.           Expires December 16, 2016               [Page 5]
+
+Internet-Draft                  YANG-Push                      June 2016
+
+
 2.  Definitions and Acronyms
 
    Data node: An instance of management information in a YANG datastore.
@@ -274,13 +292,6 @@ Internet-Draft                  YANG-Push                      June 2016
    Datastore: A conceptual store of instantiated management information,
    with individual data items represented by data nodes which are
    arranged in hierarchical manner.
-
-
-
-Clemm, et al.           Expires December 4, 2016                [Page 5]
-
-Internet-Draft                  YANG-Push                      June 2016
-
 
    Datastream: A continuous stream of data records, each including a set
    of updates, i.e. data node instances and their associated values.
@@ -319,6 +330,14 @@ Internet-Draft                  YANG-Push                      June 2016
 
    Subscriber: A client that negotiates a subscription with a server
    ("publisher").  A client that establishes a configured subscription
+
+
+
+Clemm, et al.           Expires December 16, 2016               [Page 6]
+
+Internet-Draft                  YANG-Push                      June 2016
+
+
    is also considered a subscriber, even if it is not necessarily the
    receiver of a subscription.
 
@@ -330,13 +349,6 @@ Internet-Draft                  YANG-Push                      June 2016
    Subscription filter: A filter that contains evaluation criteria which
    are evaluated against YANG objects of a subscription.  An update is
    only published if the object meets the specified filter criteria.
-
-
-
-Clemm, et al.           Expires December 4, 2016                [Page 6]
-
-Internet-Draft                  YANG-Push                      June 2016
-
 
    Subscription policy: A policy that specifies under what circumstances
    to push an update, e.g. whether updates are to be provided
@@ -373,6 +385,15 @@ Internet-Draft                  YANG-Push                      June 2016
    order to facilitate converging on an acceptable set of subscription
    parameters.  Similarly, configured subscriptions are configured as
    part of a device's configuration.  Once a subscription has been
+
+
+
+
+Clemm, et al.           Expires December 16, 2016               [Page 7]
+
+Internet-Draft                  YANG-Push                      June 2016
+
+
    established, datastore push updates are pushed from the server to the
    receiver until the subscription ends.
 
@@ -386,13 +407,6 @@ Internet-Draft                  YANG-Push                      June 2016
       cannot currently be served.
 
    o  The stream of push updates.
-
-
-
-Clemm, et al.           Expires December 4, 2016                [Page 7]
-
-Internet-Draft                  YANG-Push                      June 2016
-
 
    In addition, there are a number of additional considerations, such as
    the tie-in of the mechanisms with security mechanisms.  Each of those
@@ -429,6 +443,13 @@ Internet-Draft                  YANG-Push                      June 2016
       periodic subscriptions, from which intervals at which to send
       updates are calculated (see also below).
 
+
+
+Clemm, et al.           Expires December 16, 2016               [Page 8]
+
+Internet-Draft                  YANG-Push                      June 2016
+
+
    o  An optional stop time for the subscription.  Once the stop time is
       reached, the subscription is automatically terminated.
 
@@ -442,13 +463,6 @@ Internet-Draft                  YANG-Push                      June 2016
          time, defining one specific point in time at which an update
          needs to be sent.  Update intervals always fall on the points
          in time that are a multiple of a period after the start time.
-
-
-
-Clemm, et al.           Expires December 4, 2016                [Page 8]
-
-Internet-Draft                  YANG-Push                      June 2016
-
 
       *  EDITOR'S NOTE: A possible option to discuss concerns the
          introduction of an additional parameter "changes-only" for
@@ -484,6 +498,14 @@ Internet-Draft                  YANG-Push                      June 2016
             creation or deletion events).  It is conceivable to augment
             the data model with additional parameters in the future to
             specify even more refined policies, such as parameters that
+
+
+
+Clemm, et al.           Expires December 16, 2016               [Page 9]
+
+Internet-Draft                  YANG-Push                      June 2016
+
+
             specify the magnitude of a change that must occur before an
             update is triggered.
 
@@ -498,13 +520,6 @@ Internet-Draft                  YANG-Push                      June 2016
             fixed period intervals, grouping all changes of objects for
             which changes have occurred since the sending of their last
             update and the current dampening period.
-
-
-
-Clemm, et al.           Expires December 4, 2016                [Page 9]
-
-Internet-Draft                  YANG-Push                      June 2016
-
 
    o  Optionally, a filter, or set of filters, describing the subset of
       data items in the stream's data records that are of interest to
@@ -538,6 +553,15 @@ Internet-Draft                  YANG-Push                      June 2016
    to provide a stream with the requested semantics.  For example, a
    server may not be able to support "on-change" updates for operational
    data, or only support them for a limited set of data nodes.
+
+
+
+
+Clemm, et al.           Expires December 16, 2016              [Page 10]
+
+Internet-Draft                  YANG-Push                      June 2016
+
+
    Likewise, a server may not be able to support a requested update
    frequency.
 
@@ -554,13 +578,6 @@ Internet-Draft                  YANG-Push                      June 2016
    In case a subscriber requests an encoding other than XML, and this
    encoding is not supported by the server, the server simply indicates
    in the response that the encoding is not supported.
-
-
-
-Clemm, et al.           Expires December 4, 2016               [Page 10]
-
-Internet-Draft                  YANG-Push                      June 2016
-
 
    A subscription negotiation capability has been introduced as part of
    the NETCON Event Notifications model.  However, the ability to
@@ -593,6 +610,14 @@ Internet-Draft                  YANG-Push                      June 2016
    for which a change was detected.  To avoid flooding clients with
    repeated updates for fast-changing objects, or objects with
    oscillating values, an on-change subscription allows for the
+
+
+
+Clemm, et al.           Expires December 16, 2016              [Page 11]
+
+Internet-Draft                  YANG-Push                      June 2016
+
+
    definition of a dampening period.  Once an update for a given object
    is sent, no other updates for this particular object are sent until
    the end of the dampening period.  Values sent at the end of the
@@ -610,14 +635,6 @@ Internet-Draft                  YANG-Push                      June 2016
    change subscription specifying a policy that states how large or
    "significant" a change has to be before an update is sent.  A simple
    policy is a "delta-policy" that states, for integer-valued data
-
-
-
-Clemm, et al.           Expires December 4, 2016               [Page 11]
-
-Internet-Draft                  YANG-Push                      June 2016
-
-
    nodes, the minimum difference between the current value and the value
    that was last reported that triggers an update.  Also more
    sophisticated policies are conceivable, such as policies specified in
@@ -646,6 +663,17 @@ Internet-Draft                  YANG-Push                      June 2016
    also has special encoding rules to identify module namespaces and
    provide consistent type processing of YANG data.
 
+
+
+
+
+
+
+Clemm, et al.           Expires December 16, 2016              [Page 12]
+
+Internet-Draft                  YANG-Push                      June 2016
+
+
 3.4.2.  On-Change Subscriptions
 
    In an on-change subscription, updates need to allow to differentiate
@@ -665,14 +693,6 @@ Internet-Draft                  YANG-Push                      June 2016
 
    o  merge: The data identified by the element has been changed since
       the last update.
-
-
-
-
-Clemm, et al.           Expires December 4, 2016               [Page 12]
-
-Internet-Draft                  YANG-Push                      June 2016
-
 
    o  replace: The data identified by the element has been replaced with
       the update contents since the last update.
@@ -703,6 +723,13 @@ Internet-Draft                  YANG-Push                      June 2016
    o  xpath-filter: An XPath filter specifies an XPath expression
       applied to the data in an update, assuming XML-encoded data.
 
+
+
+Clemm, et al.           Expires December 16, 2016              [Page 13]
+
+Internet-Draft                  YANG-Push                      June 2016
+
+
    Only a single filter can be applied to a subscription at a time.
 
    It is conceivable for implementations to support other filters.  For
@@ -722,14 +749,6 @@ Internet-Draft                  YANG-Push                      June 2016
    notification.  There are however some specifics that need to be
    considered.  Contrary to other notifications that are associated with
    alarms and unexpected event occurrences, push updates are solicited,
-
-
-
-Clemm, et al.           Expires December 4, 2016               [Page 13]
-
-Internet-Draft                  YANG-Push                      June 2016
-
-
    i.e. tied to a particular subscription which triggered the
    notification, and arguably only of interest to the subscriber,
    respectively the intended receiver of the subscription.  A
@@ -758,6 +777,15 @@ Internet-Draft                  YANG-Push                      June 2016
    [RFC5277].  Alternative transports are conceivable but outside the
    scope of this specification.
 
+
+
+
+
+Clemm, et al.           Expires December 16, 2016              [Page 14]
+
+Internet-Draft                  YANG-Push                      June 2016
+
+
    The solution specified in this document uses notifications to define
    datastore updates.  The contents of the notification includes a set
    of explicitly defined data nodes.  For this purpose, two new generic
@@ -778,13 +806,6 @@ Internet-Draft                  YANG-Push                      June 2016
    record is equivalent to the contents that would be obtained had the
    same data been explicitly retrieved using e.g. a Netconf "get"-
    operation, with the same filters applied.
-
-
-
-Clemm, et al.           Expires December 4, 2016               [Page 14]
-
-Internet-Draft                  YANG-Push                      June 2016
-
 
    The contents of the notification conceptually represents the union of
    all data nodes in the yang modules supported by the server.  However,
@@ -807,6 +828,20 @@ Internet-Draft                  YANG-Push                      June 2016
    update for subscription 1011, including a subtree with root foo that
    contains a leaf, bar:
 
+
+
+
+
+
+
+
+
+
+Clemm, et al.           Expires December 16, 2016              [Page 15]
+
+Internet-Draft                  YANG-Push                      June 2016
+
+
         <notification
               xmlns="urn:ietf:params:xml:ns:netconf:notification:1.0">
            <eventTime>2015-03-09T19:14:56Z</eventTime>
@@ -828,19 +863,6 @@ Internet-Draft                  YANG-Push                      June 2016
    contains an update for subscription 89, including a new value for a
    leaf called beta, which is a child of a top-level container called
    alpha:
-
-
-
-
-
-
-
-
-
-Clemm, et al.           Expires December 4, 2016               [Page 15]
-
-Internet-Draft                  YANG-Push                      June 2016
-
 
         <notification
               xmlns="urn:ietf:params:xml:ns:netconf:notification:1.0">
@@ -871,29 +893,7 @@ Internet-Draft                  YANG-Push                      June 2016
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Clemm, et al.           Expires December 4, 2016               [Page 16]
+Clemm, et al.           Expires December 16, 2016              [Page 16]
 
 Internet-Draft                  YANG-Push                      June 2016
 
@@ -949,7 +949,7 @@ Internet-Draft                  YANG-Push                      June 2016
 
 
 
-Clemm, et al.           Expires December 4, 2016               [Page 17]
+Clemm, et al.           Expires December 16, 2016              [Page 17]
 
 Internet-Draft                  YANG-Push                      June 2016
 
@@ -1005,7 +1005,7 @@ Internet-Draft                  YANG-Push                      June 2016
 
 
 
-Clemm, et al.           Expires December 4, 2016               [Page 18]
+Clemm, et al.           Expires December 16, 2016              [Page 18]
 
 Internet-Draft                  YANG-Push                      June 2016
 
@@ -1061,7 +1061,7 @@ Internet-Draft                  YANG-Push                      June 2016
 
 
 
-Clemm, et al.           Expires December 4, 2016               [Page 19]
+Clemm, et al.           Expires December 16, 2016              [Page 19]
 
 Internet-Draft                  YANG-Push                      June 2016
 
@@ -1117,7 +1117,7 @@ Internet-Draft                  YANG-Push                      June 2016
 
 
 
-Clemm, et al.           Expires December 4, 2016               [Page 20]
+Clemm, et al.           Expires December 16, 2016              [Page 20]
 
 Internet-Draft                  YANG-Push                      June 2016
 
@@ -1173,7 +1173,7 @@ Internet-Draft                  YANG-Push                      June 2016
 
 
 
-Clemm, et al.           Expires December 4, 2016               [Page 21]
+Clemm, et al.           Expires December 16, 2016              [Page 21]
 
 Internet-Draft                  YANG-Push                      June 2016
 
@@ -1229,7 +1229,7 @@ Internet-Draft                  YANG-Push                      June 2016
 
 
 
-Clemm, et al.           Expires December 4, 2016               [Page 22]
+Clemm, et al.           Expires December 16, 2016              [Page 22]
 
 Internet-Draft                  YANG-Push                      June 2016
 
@@ -1285,7 +1285,7 @@ Internet-Draft                  YANG-Push                      June 2016
 
 
 
-Clemm, et al.           Expires December 4, 2016               [Page 23]
+Clemm, et al.           Expires December 16, 2016              [Page 23]
 
 Internet-Draft                  YANG-Push                      June 2016
 
@@ -1341,7 +1341,7 @@ Internet-Draft                  YANG-Push                      June 2016
 
 
 
-Clemm, et al.           Expires December 4, 2016               [Page 24]
+Clemm, et al.           Expires December 16, 2016              [Page 24]
 
 Internet-Draft                  YANG-Push                      June 2016
 
@@ -1397,7 +1397,7 @@ Internet-Draft                  YANG-Push                      June 2016
 
 
 
-Clemm, et al.           Expires December 4, 2016               [Page 25]
+Clemm, et al.           Expires December 16, 2016              [Page 25]
 
 Internet-Draft                  YANG-Push                      June 2016
 
@@ -1453,7 +1453,7 @@ Internet-Draft                  YANG-Push                      June 2016
 
 
 
-Clemm, et al.           Expires December 4, 2016               [Page 26]
+Clemm, et al.           Expires December 16, 2016              [Page 26]
 
 Internet-Draft                  YANG-Push                      June 2016
 
@@ -1509,7 +1509,7 @@ Internet-Draft                  YANG-Push                      June 2016
 
 
 
-Clemm, et al.           Expires December 4, 2016               [Page 27]
+Clemm, et al.           Expires December 16, 2016              [Page 27]
 
 Internet-Draft                  YANG-Push                      June 2016
 
@@ -1565,7 +1565,7 @@ Internet-Draft                  YANG-Push                      June 2016
 
 
 
-Clemm, et al.           Expires December 4, 2016               [Page 28]
+Clemm, et al.           Expires December 16, 2016              [Page 28]
 
 Internet-Draft                  YANG-Push                      June 2016
 
@@ -1621,7 +1621,7 @@ Internet-Draft                  YANG-Push                      June 2016
 
 
 
-Clemm, et al.           Expires December 4, 2016               [Page 29]
+Clemm, et al.           Expires December 16, 2016              [Page 29]
 
 Internet-Draft                  YANG-Push                      June 2016
 
@@ -1677,7 +1677,7 @@ Internet-Draft                  YANG-Push                      June 2016
 
 
 
-Clemm, et al.           Expires December 4, 2016               [Page 30]
+Clemm, et al.           Expires December 16, 2016              [Page 30]
 
 Internet-Draft                  YANG-Push                      June 2016
 
@@ -1733,7 +1733,7 @@ Internet-Draft                  YANG-Push                      June 2016
 
 
 
-Clemm, et al.           Expires December 4, 2016               [Page 31]
+Clemm, et al.           Expires December 16, 2016              [Page 31]
 
 Internet-Draft                  YANG-Push                      June 2016
 
@@ -1789,7 +1789,7 @@ Internet-Draft                  YANG-Push                      June 2016
 
 
 
-Clemm, et al.           Expires December 4, 2016               [Page 32]
+Clemm, et al.           Expires December 16, 2016              [Page 32]
 
 Internet-Draft                  YANG-Push                      June 2016
 
@@ -1845,7 +1845,7 @@ Internet-Draft                  YANG-Push                      June 2016
 
 
 
-Clemm, et al.           Expires December 4, 2016               [Page 33]
+Clemm, et al.           Expires December 16, 2016              [Page 33]
 
 Internet-Draft                  YANG-Push                      June 2016
 
@@ -1901,7 +1901,7 @@ Internet-Draft                  YANG-Push                      June 2016
 
 
 
-Clemm, et al.           Expires December 4, 2016               [Page 34]
+Clemm, et al.           Expires December 16, 2016              [Page 34]
 
 Internet-Draft                  YANG-Push                      June 2016
 
@@ -1957,7 +1957,7 @@ Internet-Draft                  YANG-Push                      June 2016
 
 
 
-Clemm, et al.           Expires December 4, 2016               [Page 35]
+Clemm, et al.           Expires December 16, 2016              [Page 35]
 
 Internet-Draft                  YANG-Push                      June 2016
 
@@ -1993,7 +1993,7 @@ Internet-Draft                  YANG-Push                      June 2016
 
 5.  YANG module
 
-<CODE BEGINS> file "ietf-yang-push@2016-06-02.yang"
+<CODE BEGINS> file "ietf-yang-push@2016-06-14.yang"
 module ietf-yang-push {
   namespace "urn:ietf:params:xml:ns:yang:ietf-yang-push";
   prefix yp;
@@ -2013,7 +2013,7 @@ module ietf-yang-push {
 
 
 
-Clemm, et al.           Expires December 4, 2016               [Page 36]
+Clemm, et al.           Expires December 16, 2016              [Page 36]
 
 Internet-Draft                  YANG-Push                      June 2016
 
@@ -2047,7 +2047,7 @@ Internet-Draft                  YANG-Push                      June 2016
     "This module contains conceptual YANG specifications
      for YANG push.";
 
-  revision 2016-06-02 {
+  revision 2016-06-14 {
     description
       "First revision to incorporate RFC 5277-bis.";
     reference "YANG Datastore Push, draft-ietf-netconf-yang-push-03";
@@ -2069,7 +2069,7 @@ Internet-Draft                  YANG-Push                      June 2016
 
 
 
-Clemm, et al.           Expires December 4, 2016               [Page 37]
+Clemm, et al.           Expires December 16, 2016              [Page 37]
 
 Internet-Draft                  YANG-Push                      June 2016
 
@@ -2125,7 +2125,7 @@ Internet-Draft                  YANG-Push                      June 2016
 
 
 
-Clemm, et al.           Expires December 4, 2016               [Page 38]
+Clemm, et al.           Expires December 16, 2016              [Page 38]
 
 Internet-Draft                  YANG-Push                      June 2016
 
@@ -2181,7 +2181,7 @@ Internet-Draft                  YANG-Push                      June 2016
 
 
 
-Clemm, et al.           Expires December 4, 2016               [Page 39]
+Clemm, et al.           Expires December 16, 2016              [Page 39]
 
 Internet-Draft                  YANG-Push                      June 2016
 
@@ -2237,7 +2237,7 @@ Internet-Draft                  YANG-Push                      June 2016
 
 
 
-Clemm, et al.           Expires December 4, 2016               [Page 40]
+Clemm, et al.           Expires December 16, 2016              [Page 40]
 
 Internet-Draft                  YANG-Push                      June 2016
 
@@ -2293,7 +2293,7 @@ Internet-Draft                  YANG-Push                      June 2016
 
 
 
-Clemm, et al.           Expires December 4, 2016               [Page 41]
+Clemm, et al.           Expires December 16, 2016              [Page 41]
 
 Internet-Draft                  YANG-Push                      June 2016
 
@@ -2349,7 +2349,7 @@ Internet-Draft                  YANG-Push                      June 2016
 
 
 
-Clemm, et al.           Expires December 4, 2016               [Page 42]
+Clemm, et al.           Expires December 16, 2016              [Page 42]
 
 Internet-Draft                  YANG-Push                      June 2016
 
@@ -2405,7 +2405,7 @@ Internet-Draft                  YANG-Push                      June 2016
 
 
 
-Clemm, et al.           Expires December 4, 2016               [Page 43]
+Clemm, et al.           Expires December 16, 2016              [Page 43]
 
 Internet-Draft                  YANG-Push                      June 2016
 
@@ -2461,7 +2461,7 @@ Internet-Draft                  YANG-Push                      June 2016
 
 
 
-Clemm, et al.           Expires December 4, 2016               [Page 44]
+Clemm, et al.           Expires December 16, 2016              [Page 44]
 
 Internet-Draft                  YANG-Push                      June 2016
 
@@ -2517,7 +2517,7 @@ Internet-Draft                  YANG-Push                      June 2016
 
 
 
-Clemm, et al.           Expires December 4, 2016               [Page 45]
+Clemm, et al.           Expires December 16, 2016              [Page 45]
 
 Internet-Draft                  YANG-Push                      June 2016
 
@@ -2573,7 +2573,7 @@ Internet-Draft                  YANG-Push                      June 2016
 
 
 
-Clemm, et al.           Expires December 4, 2016               [Page 46]
+Clemm, et al.           Expires December 16, 2016              [Page 46]
 
 Internet-Draft                  YANG-Push                      June 2016
 
@@ -2629,7 +2629,7 @@ Internet-Draft                  YANG-Push                      June 2016
 
 
 
-Clemm, et al.           Expires December 4, 2016               [Page 47]
+Clemm, et al.           Expires December 16, 2016              [Page 47]
 
 Internet-Draft                  YANG-Push                      June 2016
 
@@ -2685,7 +2685,7 @@ Internet-Draft                  YANG-Push                      June 2016
 
 
 
-Clemm, et al.           Expires December 4, 2016               [Page 48]
+Clemm, et al.           Expires December 16, 2016              [Page 48]
 
 Internet-Draft                  YANG-Push                      June 2016
 
@@ -2741,7 +2741,7 @@ Internet-Draft                  YANG-Push                      June 2016
 
 
 
-Clemm, et al.           Expires December 4, 2016               [Page 49]
+Clemm, et al.           Expires December 16, 2016              [Page 49]
 
 Internet-Draft                  YANG-Push                      June 2016
 
@@ -2797,7 +2797,7 @@ Internet-Draft                  YANG-Push                      June 2016
 
 
 
-Clemm, et al.           Expires December 4, 2016               [Page 50]
+Clemm, et al.           Expires December 16, 2016              [Page 50]
 
 Internet-Draft                  YANG-Push                      June 2016
 
@@ -2815,9 +2815,118 @@ Internet-Draft                  YANG-Push                      June 2016
    In addition, the Netconf Authorization Control Model SHOULD be used
    to control and restrict authorization of subscription configuration.
 
-7.  References
+7.  Issues that are currently being worked and resolved
 
-7.1.  Normative References
+7.1.  Unresolved issues under discussion
+
+   o  Which stream types to introduce.  Current list includes streams
+      for all operational and for all config data.  Consider adding
+      stream for operational data minus counters.  Also: assess
+      implications of opstate implications on required data streams.
+
+   o  In addition to identifying which items go to which streams,
+      identifying and calling out which items (such as counters) should
+      not be "on-change subscribable" may be useful.  Consider
+      introducing a Yang extension to define if an object: is-a-counter
+      and/or not-notifiable.
+
+   o  What QoS parameters should be supported for subscriptions.  Note:
+      QoS parameters are applicable to buffering as well as temporarily
+      loss of transport connectivity.
+
+   o  Implications of ephemeral requirements from I2RS
+
+   o  Filters: YANG 1.1 allows filters to be defined in multiple places.
+      How do they intersect each other in a deterministic way.
+
+   o  On-change subscription: consider providing publisher with
+      capability to initiate a refresh of contents rather than send
+      deltas.  Current proposal allows for a "synch-on-start" option;
+      such an option might be useful also e.g. on resumption of a
+      subscription that had been suspended.
+
+   o  Do we need an extension for NACM to support filter out datastore
+      nodes for which the receiver has no read access?  (And how does
+      this differ from existing GET, which must do the same filtering?)
+      In 5277, such filtering is done at the notification level.  Yang-
+      push includes notification-content filtering.  This may be very
+
+
+
+Clemm, et al.           Expires December 16, 2016              [Page 51]
+
+Internet-Draft                  YANG-Push                      June 2016
+
+
+      expensive in terms of processing.  Andy suggestion: only accept
+      Yang-push subscriptions for subtrees the user has rights for all
+      the nodes in the subtree.  Changes to those rights trigger a
+      subscription termination.  Should we codify this, or let vendors
+      determine when per subtree filtering might be applied?
+
+7.2.  Agreement in principal
+
+   Still need to agree on draft text
+
+   o  Multiple receivers per configured subscription is ok.
+
+   o  Proper behavior for on-change, including detecting and indicating
+      changes within a dampening period.
+
+   o  Still some details to work through, e.g., do we add a counter for
+      the number of object changes during a dampening period?
+
+   o  Negotiate vs. auto-adjust.  Cases where negotiate is needed exists
+      for domain synchronization.  Error messages can be used to
+      transport information back as hints.  Alternative is dedicated RPC
+      responses.  In either case specific contents of these negotiation
+      messages must still be defined.
+
+   o  Message format for synchronization (i.e. synch-on-start) still
+      needs to be defined.
+
+7.3.  Closed Issues
+
+   Some editorial updates needed to reflect these
+
+   o  Periodic interval goes to seconds from timeticks
+
+   o  Balancing Augment vs. Parallel Model structures (maximize augment)
+
+   o  Moving from separate start/stop to Anchor time for Periodic
+
+8.  Acknowledgments
+
+   We would like to acknowledge the following people for their valuable
+   comments, discussions, and feedback:
+
+   o  Andy Bierman, YumaWorks
+
+   o  Yang Geng, Huawei
+
+   o  Peipei Guo, Huawei
+
+
+
+
+Clemm, et al.           Expires December 16, 2016              [Page 52]
+
+Internet-Draft                  YANG-Push                      June 2016
+
+
+   o  Susan Hares, Huawei
+
+   o  Tim Jenkins, Cisco
+
+   o  Balazs Lengyel, Ericsson
+
+   o  Kent Watsen, Juniper
+
+   o  Walker, Huawei
+
+9.  References
+
+9.1.  Normative References
 
    [RFC1157]  Case, J., Fedor, M., Schoffstall, M., and J. Davin,
               "Simple Network Management Protocol (SNMP)", RFC 1157,
@@ -2845,23 +2954,21 @@ Internet-Draft                  YANG-Push                      June 2016
               DOI 10.17487/RFC6536, March 2012,
               <http://www.rfc-editor.org/info/rfc6536>.
 
-7.2.  Informative References
-
-
-
-
-
-
-
-Clemm, et al.           Expires December 4, 2016               [Page 51]
-
-Internet-Draft                  YANG-Push                      June 2016
-
+9.2.  Informative References
 
    [I-D.clemm-netmod-mount]
               Clemm, A., Medved, J., and E. Voit, "Mounting YANG-defined
               information from remote datastores", draft-clemm-netmod-
               mount-03 (work in progress), April 2015.
+
+
+
+
+
+Clemm, et al.           Expires December 16, 2016              [Page 53]
+
+Internet-Draft                  YANG-Push                      June 2016
+
 
    [I-D.gonzalez-netconf-5277bis]
               Gonzalez Prieto, A., Clemm, A., Voit, E., Tripathy, A.,
@@ -2909,7 +3016,12 @@ Authors' Addresses
 
 
 
-Clemm, et al.           Expires December 4, 2016               [Page 52]
+
+
+
+
+
+Clemm, et al.           Expires December 16, 2016              [Page 54]
 
 Internet-Draft                  YANG-Push                      June 2016
 
@@ -2965,4 +3077,4 @@ Internet-Draft                  YANG-Push                      June 2016
 
 
 
-Clemm, et al.           Expires December 4, 2016               [Page 53]
+Clemm, et al.           Expires December 16, 2016              [Page 55]
