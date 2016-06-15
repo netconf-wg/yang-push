@@ -5,20 +5,24 @@
 NETCONF                                               A. Gonzalez Prieto
 Internet-Draft                                                  A. Clemm
 Intended status: Standards Track                                 E. Voit
-Expires: December 4, 2016                              E. Nilsen-Nygaard
+Expires: December 16, 2016                             E. Nilsen-Nygaard
                                                              A. Tripathy
                                                            Cisco Systems
                                                              S. Chisholm
                                                                    Ciena
                                                               H. Trevino
                                                            Cisco Systems
-                                                            June 2, 2016
+                                                           June 14, 2016
 
 
             Subscribing to YANG-Defined Event Notifications
                    draft-gonzalez-netconf-5277bis-02
 
 Abstract
+
+   DISCLAIMER: WHILE THIS DOCUMENT HAS BEEN FORMATTED TO APPEAR AS AN
+   INTERNET DRAFT, THIS VERSION CONSTITUTES WORK-IN-PROGRESS AND HAS NOT
+   BEEN SUBMITTED TO THE IETF INTERNET DRAFT REPOSITORY.
 
    This document defines capabilities and operations for providing
    asynchronous message notification delivery for notifications defined
@@ -44,16 +48,12 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on December 4, 2016.
+   This Internet-Draft will expire on December 16, 2016.
 
 
 
 
-
-
-
-
-Gonzalez Prieto, et al. Expires December 4, 2016                [Page 1]
+Gonzalez Prieto, et al. Expires December 16, 2016               [Page 1]
 
 Internet-Draft                  5277 bis                       June 2016
 
@@ -82,37 +82,42 @@ Table of Contents
    2.  Solution  . . . . . . . . . . . . . . . . . . . . . . . . . .   7
      2.1.  Event Streams . . . . . . . . . . . . . . . . . . . . . .   7
      2.2.  Event Stream Discovery  . . . . . . . . . . . . . . . . .   7
-     2.3.  Default Event Stream  . . . . . . . . . . . . . . . . . .   9
-     2.4.  Filters . . . . . . . . . . . . . . . . . . . . . . . . .   9
-     2.5.  Subscription State Model at the Publisher . . . . . . . .   9
-     2.6.  Data Model Trees for Event Notifications  . . . . . . . .  10
-     2.7.  Creating a Subscription . . . . . . . . . . . . . . . . .  15
-     2.8.  Establishing a Subscription . . . . . . . . . . . . . . .  17
-     2.9.  Modifying a Subscription  . . . . . . . . . . . . . . . .  21
-     2.10. Deleting a Subscription . . . . . . . . . . . . . . . . .  25
-     2.11. Configured Subscriptions  . . . . . . . . . . . . . . . .  27
-     2.12. Event (Data Plane) Notifications  . . . . . . . . . . . .  31
-     2.13. Control Plane Notifications . . . . . . . . . . . . . . .  33
-     2.14. Subscription Management . . . . . . . . . . . . . . . . .  35
-   3.  Data Models for Event Notifications . . . . . . . . . . . . .  36
-     3.1.  Data Model for RFC5277 (netmod namespace) . . . . . . . .  36
-     3.2.  Data Model for RFC5277 (netconf namespace)  . . . . . . .  39
-     3.3.  Data Model for RFC5277-bis Extensions . . . . . . . . . .  43
-   4.  Backwards Compatibility . . . . . . . . . . . . . . . . . . .  61
-   5.  Security Considerations . . . . . . . . . . . . . . . . . . .  62
-   6.  References  . . . . . . . . . . . . . . . . . . . . . . . . .  63
-     6.1.  Normative References  . . . . . . . . . . . . . . . . . .  63
-     6.2.  Informative References  . . . . . . . . . . . . . . . . .  63
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  64
+     2.3.  Default Event Stream  . . . . . . . . . . . . . . . . . .   8
+     2.4.  Filters . . . . . . . . . . . . . . . . . . . . . . . . .   8
+     2.5.  Subscription State Model at the Publisher . . . . . . . .   8
+     2.6.  Data Model Trees for Event Notifications  . . . . . . . .   9
+     2.7.  Creating a Subscription . . . . . . . . . . . . . . . . .  13
+     2.8.  Establishing a Subscription . . . . . . . . . . . . . . .  16
+     2.9.  Modifying a Subscription  . . . . . . . . . . . . . . . .  19
+     2.10. Deleting a Subscription . . . . . . . . . . . . . . . . .  23
+     2.11. Configured Subscriptions  . . . . . . . . . . . . . . . .  25
+     2.12. Event (Data Plane) Notifications  . . . . . . . . . . . .  29
+     2.13. Control Plane Notifications . . . . . . . . . . . . . . .  31
+     2.14. Subscription Management . . . . . . . . . . . . . . . . .  33
+   3.  Data Models for Event Notifications . . . . . . . . . . . . .  34
+     3.1.  Data Model for RFC5277 (netmod namespace) . . . . . . . .  34
+     3.2.  Data Model for RFC5277 (netconf namespace)  . . . . . . .  37
+     3.3.  Data Model for RFC5277-bis Extensions . . . . . . . . . .  41
+   4.  Backwards Compatibility . . . . . . . . . . . . . . . . . . .  59
+   5.  Security Considerations . . . . . . . . . . . . . . . . . . .  60
+   6.  Issues that are currently being worked and resolved . . . . .  61
+     6.1.  Unresolved and yet-to-be addressed issues . . . . . . . .  61
+     6.2.  Agreement in principal  . . . . . . . . . . . . . . . . .  61
+     6.3.  Resolved Issues . . . . . . . . . . . . . . . . . . . . .  62
+     6.4.  Editorial To-Dos  . . . . . . . . . . . . . . . . . . . .  62
+   7.  Acknowledgments . . . . . . . . . . . . . . . . . . . . . . .  62
 
 
 
-
-
-Gonzalez Prieto, et al. Expires December 4, 2016                [Page 2]
+Gonzalez Prieto, et al. Expires December 16, 2016               [Page 2]
 
 Internet-Draft                  5277 bis                       June 2016
 
+
+   8.  References  . . . . . . . . . . . . . . . . . . . . . . . . .  62
+     8.1.  Normative References  . . . . . . . . . . . . . . . . . .  63
+     8.2.  Informative References  . . . . . . . . . . . . . . . . .  63
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  63
 
 1.  Introduction
 
@@ -156,19 +161,20 @@ Internet-Draft                  5277 bis                       June 2016
    notification messages that are consistent with the data model
    (content) and security model used within a NETCONF implementation.
 
+
+
+
+
+Gonzalez Prieto, et al. Expires December 16, 2016               [Page 3]
+
+Internet-Draft                  5277 bis                       June 2016
+
+
    [RFC5277] defines a notification mechanism for NETCONF.  However,
    there are various limitations:
 
    o  Each subscription requires a separate NETCONF connection, which is
       wasteful.
-
-
-
-
-Gonzalez Prieto, et al. Expires December 4, 2016                [Page 3]
-
-Internet-Draft                  5277 bis                       June 2016
-
 
    o  The only mechanism to terminate a subscription is terminating the
       underlying NETCONF connection.
@@ -211,20 +217,17 @@ Internet-Draft                  5277 bis                       June 2016
 
    o  Backwards compatible with RFC 5277 implementations.
 
-   o  Define in YANG, the RPCs, notifications, and data nodes in RFC
-      5277.
 
 
 
 
-
-
-
-
-Gonzalez Prieto, et al. Expires December 4, 2016                [Page 4]
+Gonzalez Prieto, et al. Expires December 16, 2016               [Page 4]
 
 Internet-Draft                  5277 bis                       June 2016
 
+
+   o  Define in YANG, the RPCs, notifications, and data nodes in RFC
+      5277.
 
 1.2.  Terminology
 
@@ -271,16 +274,15 @@ Internet-Draft                  5277 bis                       June 2016
 
    NACM: NETCONF Access Control Model.
 
-   RPC: Remote Procedure Call.
 
 
 
-
-
-Gonzalez Prieto, et al. Expires December 4, 2016                [Page 5]
+Gonzalez Prieto, et al. Expires December 16, 2016               [Page 5]
 
 Internet-Draft                  5277 bis                       June 2016
 
+
+   RPC: Remote Procedure Call.
 
 1.3.  Solution Overview
 
@@ -328,16 +330,16 @@ Internet-Draft                  5277 bis                       June 2016
       persists even when transport is unavailable.  This also means
       configured subscriptions do not support negotiation.
 
-   o  Subscriptions can be modified or terminated at any point of their
-      lifetime. configured subscriptions can be modified by any
 
 
 
-Gonzalez Prieto, et al. Expires December 4, 2016                [Page 6]
+Gonzalez Prieto, et al. Expires December 16, 2016               [Page 6]
 
 Internet-Draft                  5277 bis                       June 2016
 
 
+   o  Subscriptions can be modified or terminated at any point of their
+      lifetime. configured subscriptions can be modified by any
       configuration client with write rights on the configuration of the
       subscription.
 
@@ -364,9 +366,9 @@ Internet-Draft                  5277 bis                       June 2016
 2.1.  Event Streams
 
    An event stream is a set of events available for subscription from a
-   NETCONF server.  It is out of the scope of this document to identify
-   a) how streams are defined, b) how events are defined/generated, and
-   c) how events are assigned to streams.
+   server.  It is out of the scope of this document to identify a) how
+   streams are defined, b) how events are defined/generated, and c) how
+   events are assigned to streams.
 
    The following is a high-level description of the flow of a
    notification.  Note that it does not mandate and/or preclude an
@@ -380,100 +382,17 @@ Internet-Draft                  5277 bis                       June 2016
 
 2.2.  Event Stream Discovery
 
-   A NETCONF client can retrieve the list of available event streams
-   from a NETCONF server using the <get> operation.  The reply contains
-   the elements defined in the YANG model under the container /netconf/
-   streams, which includes the name and description of the streams.
+   A server maintains a list of available event streams as operational
+   data.  A client can retrieve this list like any other YANG-defined
+   data, for example using the <get> operation when using NETCONF.
 
 
 
 
-
-Gonzalez Prieto, et al. Expires December 4, 2016                [Page 7]
+Gonzalez Prieto, et al. Expires December 16, 2016               [Page 7]
 
 Internet-Draft                  5277 bis                       June 2016
 
-
-   The following example shows retrieving the list of available event
-   stream list using the <get> operation.
-
-   <rpc message-id="101"
-          xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
-       <get>
-           <filter type="subtree">
-               <netconf
-                    xmlns="urn:ietf:params:xml:ns:netmod:notification">
-                   <streams/>
-               </netconf>
-           </filter>
-        </get>
-   </rpc>
-
-                           Figure 1: Get streams
-
-   The NETCONF server returns a list of event streams available for
-   subscription.  In this example, the list contains the NETCONF, SNMP,
-   and syslog-critical streams.
-
-   <rpc-reply message-id="101"
-           xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
-       <data>
-           <netconf
-                  xmlns="urn:ietf:params:xml:ns:netmod:notification">
-               <streams>
-                   <stream>
-                       <name>
-                           NETCONF
-                       </name>
-                       <description>
-                           default NETCONF event stream
-                       </description>
-                       <replaySupport>
-                           true
-                       </replaySupport>
-                       <replayLogCreationTime>
-                           2016-02-05T00:00:00Z
-                       </replayLogCreationTime>
-                   </stream>
-                   <stream>
-                       <name>
-                           SNMP
-                       </name>
-                       <description>
-                           SNMP notifications
-                       </description>
-
-
-
-Gonzalez Prieto, et al. Expires December 4, 2016                [Page 8]
-
-Internet-Draft                  5277 bis                       June 2016
-
-
-                       <replaySupport>
-                           false
-                       </replaySupport>
-                   </stream>
-                   <stream>
-                       <name>
-                           syslog-critical
-                       </name>
-                       <description>
-                           Critical and higher severity
-                       </description>
-                       <replaySupport>
-                           true
-                       </replaySupport>
-                       <replayLogCreationTime>
-                           2007-07-01T00:00:00Z
-                       </replayLogCreationTime>
-                   </stream>
-              </streams>
-           </netconf>
-       </data>
-   </rpc-reply>
-
-                      Figure 2: Get streams response
 
 2.3.  Default Event Stream
 
@@ -497,15 +416,6 @@ Internet-Draft                  5277 bis                       June 2016
    is important to note that a subscription doesn't exist at the
    publisher until it is accepted and made active.  The mere request by
    a subscriber to establish a subscription is insufficient for that
-
-
-
-
-Gonzalez Prieto, et al. Expires December 4, 2016                [Page 9]
-
-Internet-Draft                  5277 bis                       June 2016
-
-
    asserted subscription to be externally visible via this state
    machine.
 
@@ -530,7 +440,15 @@ Internet-Draft                  5277 bis                       June 2016
                        |  end  |<-----------------------------'
                        '-------'
 
-                Figure 3: Subscription states at publisher
+                Figure 1: Subscription states at publisher
+
+
+
+
+Gonzalez Prieto, et al. Expires December 16, 2016               [Page 8]
+
+Internet-Draft                  5277 bis                       June 2016
+
 
    Of interest in this state machine are the following:
 
@@ -550,17 +468,6 @@ Internet-Draft                  5277 bis                       June 2016
    following sections.
 
 2.6.1.  Data Model Tree for RFC5277 (netconf namespace)
-
-
-
-
-
-
-
-Gonzalez Prieto, et al. Expires December 4, 2016               [Page 10]
-
-Internet-Draft                  5277 bis                       June 2016
-
 
    module: ietf-5277-netconf
    rpcs:
@@ -588,6 +495,17 @@ Internet-Draft                  5277 bis                       June 2016
       +---n replayComplete
       +---n notificationComplete
 
+
+
+
+
+
+
+Gonzalez Prieto, et al. Expires December 16, 2016               [Page 9]
+
+Internet-Draft                  5277 bis                       June 2016
+
+
 2.6.3.  Data Model for RFC5277-bis Extensions
 
 module: ietf-event-notifications
@@ -610,14 +528,6 @@ module: ietf-event-notifications
    |     |     +--rw filter-ref?         filter-ref
    |     +--rw startTime?          yang:date-and-time
    |     +--rw stopTime?           yang:date-and-time
-
-
-
-Gonzalez Prieto, et al. Expires December 4, 2016               [Page 11]
-
-Internet-Draft                  5277 bis                       June 2016
-
-
    |     +--rw encoding?           encoding
    |     +--rw receivers
    |     |  +--rw receiver* [address]
@@ -644,6 +554,14 @@ Internet-Draft                  5277 bis                       June 2016
          +--ro startTime?                 yang:date-and-time
          +--ro stopTime?                  yang:date-and-time
          +--ro encoding?                  encoding
+
+
+
+Gonzalez Prieto, et al. Expires December 16, 2016              [Page 10]
+
+Internet-Draft                  5277 bis                       June 2016
+
+
          +--ro receivers
          |  +--ro receiver* [address]
          |     +--ro address     inet:host
@@ -666,14 +584,6 @@ rpcs:
    |  +---w input
    |  |  +---w stream?       stream
    |  |  +---w (filter-type)?
-
-
-
-Gonzalez Prieto, et al. Expires December 4, 2016               [Page 12]
-
-Internet-Draft                  5277 bis                       June 2016
-
-
    |  |  |  +--:(rfc5277)
    |  |  |  |  +---w filter
    |  |  |  +--:(by-reference)
@@ -700,6 +610,14 @@ Internet-Draft                  5277 bis                       June 2016
    |  +---w input
    |  |  +---w subscription-id?   subscription-id
    |  |  +---w stream?            stream
+
+
+
+Gonzalez Prieto, et al. Expires December 16, 2016              [Page 11]
+
+Internet-Draft                  5277 bis                       June 2016
+
+
    |  |  +---w (filter-type)?
    |  |  |  +--:(rfc5277)
    |  |  |  |  +---w filter
@@ -722,14 +640,6 @@ Internet-Draft                  5277 bis                       June 2016
    |           |     +--ro filter-ref?            filter-ref
    |           +--ro startTime?             yang:date-and-time
    |           +--ro stopTime?              yang:date-and-time
-
-
-
-Gonzalez Prieto, et al. Expires December 4, 2016               [Page 13]
-
-Internet-Draft                  5277 bis                       June 2016
-
-
    |           +--ro encoding?              encoding
    +---x delete-subscription
       +---w input
@@ -756,6 +666,14 @@ notifications:
    +---n subscription-modified
    |  +--ro subscription-id    subscription-id
    |  +--ro stream?            stream
+
+
+
+Gonzalez Prieto, et al. Expires December 16, 2016              [Page 12]
+
+Internet-Draft                  5277 bis                       June 2016
+
+
    |  +--ro (filter-type)?
    |  |  +--:(rfc5277)
    |  |  |  +--ro filter
@@ -778,14 +696,6 @@ notifications:
    |  +--ro startTime?         yang:date-and-time
    |  +--ro stopTime?          yang:date-and-time
    |  +--ro encoding?          encoding
-
-
-
-Gonzalez Prieto, et al. Expires December 4, 2016               [Page 14]
-
-Internet-Draft                  5277 bis                       June 2016
-
-
    +---n removed-from-subscription
       +--ro subscription-id    subscription-id
 
@@ -812,6 +722,14 @@ Internet-Draft                  5277 bis                       June 2016
    filter: An optional parameter that indicates which subset of all
    possible events is of interest.  The format of this parameter is the
    same as that of the filter parameter in the NETCONF protocol
+
+
+
+Gonzalez Prieto, et al. Expires December 16, 2016              [Page 13]
+
+Internet-Draft                  5277 bis                       June 2016
+
+
    operations.  If not present, all events not precluded by other
    parameters will be sent.
 
@@ -834,14 +752,6 @@ Internet-Draft                  5277 bis                       June 2016
    The following demonstrates dynamically creating a simple
    subscription.
 
-
-
-
-Gonzalez Prieto, et al. Expires December 4, 2016               [Page 15]
-
-Internet-Draft                  5277 bis                       June 2016
-
-
    <netconf:rpc message-id="101"
           xmlns:netconf="urn:ietf:params:xml:ns:netconf:base:1.0">
        <create-subscription
@@ -849,12 +759,32 @@ Internet-Draft                  5277 bis                       June 2016
        </create-subscription>
    </netconf:rpc>
 
-                       Figure 4: Create subscription
+                       Figure 2: Create subscription
 
 2.7.3.  Positive Response
 
    If the NETCONF server can satisfy the request, the server sends an
    <ok> element.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Gonzalez Prieto, et al. Expires December 16, 2016              [Page 14]
+
+Internet-Draft                  5277 bis                       June 2016
+
 
    <netconf:rpc netconf:message-id="102"
           xmlns:netconf="urn:ietf:params:xml:ns:netconf:base:1.0">
@@ -873,7 +803,7 @@ Internet-Draft                  5277 bis                       June 2016
        <ok/>
    </rpc-reply>
 
-                 Figure 5: Successful create subscription
+                 Figure 3: Successful create subscription
 
 2.7.4.  Negative Response
 
@@ -885,18 +815,6 @@ Internet-Draft                  5277 bis                       June 2016
 
    If a stopTime is specified in a request without having specified a
    startTime, the following error is returned:
-
-
-
-
-
-
-
-
-Gonzalez Prieto, et al. Expires December 4, 2016               [Page 16]
-
-Internet-Draft                  5277 bis                       June 2016
-
 
    Tag: missing-element
    Error-type: protocol
@@ -914,6 +832,15 @@ Internet-Draft                  5277 bis                       June 2016
    Description: Request could not be completed because the
                 requested operation failed for some reason
                 not covered by any other error condition.
+
+
+
+
+
+Gonzalez Prieto, et al. Expires December 16, 2016              [Page 15]
+
+Internet-Draft                  5277 bis                       June 2016
+
 
    If a stopTime is requested that is earlier than the specified
    startTime, the following error is returned:
@@ -945,15 +872,6 @@ Internet-Draft                  5277 bis                       June 2016
    single NETCONF session (if interleaving [RFC6241] is supported), and
    canceling subscriptions without terminating the NETCONF session.
 
-
-
-
-
-Gonzalez Prieto, et al. Expires December 4, 2016               [Page 17]
-
-Internet-Draft                  5277 bis                       June 2016
-
-
 2.8.1.  Parameters
 
    The input parameters of the operation are those of create
@@ -970,6 +888,16 @@ Internet-Draft                  5277 bis                       June 2016
 
    The following demonstrates establishing a simple subscription.
 
+
+
+
+
+
+Gonzalez Prieto, et al. Expires December 16, 2016              [Page 16]
+
+Internet-Draft                  5277 bis                       June 2016
+
+
    <netconf:rpc message-id="101"
           xmlns:netconf="urn:ietf:params:xml:ns:netconf:base:1.0">
        <establish-subscription
@@ -977,38 +905,13 @@ Internet-Draft                  5277 bis                       June 2016
        </establish-subscription>
    </netconf:rpc>
 
-                     Figure 6: Establish subscription
+                     Figure 4: Establish subscription
 
 2.8.3.  Positive Response
 
    If the NETCONF server can satisfy the request, the server sends a
    positive <subscription-result> element, and the subscription-id of
    the accepted subscription.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Gonzalez Prieto, et al. Expires December 4, 2016               [Page 18]
-
-Internet-Draft                  5277 bis                       June 2016
-
 
    <netconf:rpc netconf:message-id="102"
           xmlns:netconf="urn:ietf:params:xml:ns:netconf:base:1.0">
@@ -1034,37 +937,26 @@ Internet-Draft                  5277 bis                       June 2016
        </subscription-id>
    </rpc-reply>
 
-                Figure 7: Successful establish subscription
+                Figure 5: Successful establish subscription
 
 2.8.4.  Negative Response
 
    If the NETCONF server cannot satisfy the request, the server sends a
    negative <subscription-result> element.
 
-   If the client has no authorization to establish the subscription, the
-   <subscription-result> indicates an authorization error.  For
-   instance:
 
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-Gonzalez Prieto, et al. Expires December 4, 2016               [Page 19]
+Gonzalez Prieto, et al. Expires December 16, 2016              [Page 17]
 
 Internet-Draft                  5277 bis                       June 2016
 
+
+   If the client has no authorization to establish the subscription, the
+   <subscription-result> indicates an authorization error.  For
+   instance:
 
    <netconf:rpc netconf:message-id="103"
           xmlns:netconf="urn:ietf:params:xml:ns:netconf:base:1.0">
@@ -1082,7 +974,7 @@ Internet-Draft                  5277 bis                       June 2016
        </subscription-result>
    </rpc-reply>
 
-               Figure 8: Unsuccessful establish subscription
+               Figure 6: Unsuccessful establish subscription
 
    If the request is rejected because the server is not able to serve
    it, the server SHOULD include in the returned error what subscription
@@ -1113,11 +1005,7 @@ Internet-Draft                  5277 bis                       June 2016
 
 
 
-
-
-
-
-Gonzalez Prieto, et al. Expires December 4, 2016               [Page 20]
+Gonzalez Prieto, et al. Expires December 16, 2016              [Page 18]
 
 Internet-Draft                  5277 bis                       June 2016
 
@@ -1151,7 +1039,7 @@ Internet-Draft                  5277 bis                       June 2016
          </period>
       </rpc-reply>
 
-             Figure 9: Subscription establishment negotiation
+             Figure 7: Subscription establishment negotiation
 
    Subscription requests will fail if a filter with invalid syntax is
    provided or if the name of a non-existent stream is provided.
@@ -1173,7 +1061,7 @@ Internet-Draft                  5277 bis                       June 2016
 
 
 
-Gonzalez Prieto, et al. Expires December 4, 2016               [Page 21]
+Gonzalez Prieto, et al. Expires December 16, 2016              [Page 19]
 
 Internet-Draft                  5277 bis                       June 2016
 
@@ -1225,11 +1113,11 @@ Internet-Draft                  5277 bis                       June 2016
        </subscription-id>
    </rpc-reply>
 
-             Figure 10: Establish subscription to be modified
+              Figure 8: Establish subscription to be modified
 
 
 
-Gonzalez Prieto, et al. Expires December 4, 2016               [Page 22]
+Gonzalez Prieto, et al. Expires December 16, 2016              [Page 20]
 
 Internet-Draft                  5277 bis                       June 2016
 
@@ -1257,7 +1145,7 @@ Internet-Draft                  5277 bis                       June 2016
        </subscription-id>
    </rpc-reply>
 
-                      Figure 11: Modify subscription
+                       Figure 9: Modify subscription
 
 2.9.3.  Positive Response
 
@@ -1285,7 +1173,7 @@ Internet-Draft                  5277 bis                       June 2016
 
 
 
-Gonzalez Prieto, et al. Expires December 4, 2016               [Page 23]
+Gonzalez Prieto, et al. Expires December 16, 2016              [Page 21]
 
 Internet-Draft                  5277 bis                       June 2016
 
@@ -1310,7 +1198,7 @@ Internet-Draft                  5277 bis                       June 2016
        </subscription-result>
    </rpc-reply>
 
-                 Figure 12: Successful modify subscription
+                 Figure 10: Successful modify subscription
 
 2.9.4.  Negative Response
 
@@ -1341,7 +1229,7 @@ Internet-Draft                  5277 bis                       June 2016
 
 
 
-Gonzalez Prieto, et al. Expires December 4, 2016               [Page 24]
+Gonzalez Prieto, et al. Expires December 16, 2016              [Page 22]
 
 Internet-Draft                  5277 bis                       June 2016
 
@@ -1367,7 +1255,7 @@ Internet-Draft                  5277 bis                       June 2016
        <period>500</period>
    </rpc-reply>
 
-                Figure 13: Unsuccessful modify subscription
+                Figure 11: Unsuccessful modify subscription
 
 2.10.  Deleting a Subscription
 
@@ -1397,7 +1285,7 @@ Internet-Draft                  5277 bis                       June 2016
 
 
 
-Gonzalez Prieto, et al. Expires December 4, 2016               [Page 25]
+Gonzalez Prieto, et al. Expires December 16, 2016              [Page 23]
 
 Internet-Draft                  5277 bis                       June 2016
 
@@ -1414,7 +1302,7 @@ Internet-Draft                  5277 bis                       June 2016
        </delete-subscription>
    </netconf:rpc>
 
-                      Figure 14: Delete subscription
+                      Figure 12: Delete subscription
 
 2.10.3.  Positive Response
 
@@ -1434,7 +1322,7 @@ Internet-Draft                  5277 bis                       June 2016
        <ok/>
    </rpc-reply>
 
-                 Figure 15: Successful delete subscription
+                 Figure 13: Successful delete subscription
 
 2.10.4.  Negative Response
 
@@ -1453,7 +1341,7 @@ Internet-Draft                  5277 bis                       June 2016
 
 
 
-Gonzalez Prieto, et al. Expires December 4, 2016               [Page 26]
+Gonzalez Prieto, et al. Expires December 16, 2016              [Page 24]
 
 Internet-Draft                  5277 bis                       June 2016
 
@@ -1482,7 +1370,7 @@ Internet-Draft                  5277 bis                       June 2016
        </rpc-error>
    </rpc-reply>
 
-                Figure 16: Unsuccessful delete subscription
+                Figure 14: Unsuccessful delete subscription
 
 2.11.  Configured Subscriptions
 
@@ -1509,7 +1397,7 @@ Internet-Draft                  5277 bis                       June 2016
 
 
 
-Gonzalez Prieto, et al. Expires December 4, 2016               [Page 27]
+Gonzalez Prieto, et al. Expires December 16, 2016              [Page 25]
 
 Internet-Draft                  5277 bis                       June 2016
 
@@ -1565,7 +1453,7 @@ Internet-Draft                  5277 bis                       June 2016
 
 
 
-Gonzalez Prieto, et al. Expires December 4, 2016               [Page 28]
+Gonzalez Prieto, et al. Expires December 16, 2016              [Page 26]
 
 Internet-Draft                  5277 bis                       June 2016
 
@@ -1599,7 +1487,7 @@ Internet-Draft                  5277 bis                       June 2016
        </edit-config>
    </rpc>
 
-               Figure 17: Establish configured subscription
+               Figure 15: Establish configured subscription
 
    if the request is accepted, the server would reply:
 
@@ -1608,7 +1496,7 @@ Internet-Draft                  5277 bis                       June 2016
           <ok/>
    </rpc-reply>
 
-        Figure 18: Response to a successful configured subscription
+        Figure 16: Response to a successful configured subscription
                                establishment
 
    if the request is not accepted because the server cannot serve it,
@@ -1621,7 +1509,7 @@ Internet-Draft                  5277 bis                       June 2016
 
 
 
-Gonzalez Prieto, et al. Expires December 4, 2016               [Page 29]
+Gonzalez Prieto, et al. Expires December 16, 2016              [Page 27]
 
 Internet-Draft                  5277 bis                       June 2016
 
@@ -1638,7 +1526,7 @@ Internet-Draft                  5277 bis                       June 2016
        </rpc-error>
    </rpc-reply>
 
-   Figure 19: Response to a failed configured subscription establishment
+   Figure 17: Response to a failed configured subscription establishment
 
 2.11.3.  Modifying a Configured Subscription
 
@@ -1677,7 +1565,7 @@ Internet-Draft                  5277 bis                       June 2016
 
 
 
-Gonzalez Prieto, et al. Expires December 4, 2016               [Page 30]
+Gonzalez Prieto, et al. Expires December 16, 2016              [Page 28]
 
 Internet-Draft                  5277 bis                       June 2016
 
@@ -1705,7 +1593,7 @@ Internet-Draft                  5277 bis                       June 2016
    </rpc-reply>
 
 
-               Figure 20: Deleting a configured subscription
+               Figure 18: Deleting a configured subscription
 
    Immediately after a subscription is successfully deleted, the server
    sends to the receivers a control-plane notification stating the
@@ -1733,7 +1621,7 @@ Internet-Draft                  5277 bis                       June 2016
 
 
 
-Gonzalez Prieto, et al. Expires December 4, 2016               [Page 31]
+Gonzalez Prieto, et al. Expires December 16, 2016              [Page 29]
 
 Internet-Draft                  5277 bis                       June 2016
 
@@ -1770,7 +1658,7 @@ Internet-Draft                  5277 bis                       June 2016
        }
    }
 
-            Figure 21: Definition of a data plane notification
+            Figure 19: Definition of a data plane notification
 
    <notification
           xmlns=" urn:ietf:params:xml:ns:netconf:notification:1.0">
@@ -1782,14 +1670,14 @@ Internet-Draft                  5277 bis                       June 2016
        </link-failure>
    </notification>
 
-                    Figure 22: Data plane notification
+                    Figure 20: Data plane notification
 
    The equivalent using json encoding would be
 
 
 
 
-Gonzalez Prieto, et al. Expires December 4, 2016               [Page 32]
+Gonzalez Prieto, et al. Expires December 16, 2016              [Page 30]
 
 Internet-Draft                  5277 bis                       June 2016
 
@@ -1808,7 +1696,7 @@ Internet-Draft                  5277 bis                       June 2016
        </notification-contents-json>
     </notification>
 
-          Figure 23: Data plane notification using JSON encoding
+          Figure 21: Data plane notification using JSON encoding
 
 2.13.  Control Plane Notifications
 
@@ -1845,7 +1733,7 @@ Internet-Draft                  5277 bis                       June 2016
 
 
 
-Gonzalez Prieto, et al. Expires December 4, 2016               [Page 33]
+Gonzalez Prieto, et al. Expires December 16, 2016              [Page 31]
 
 Internet-Draft                  5277 bis                       June 2016
 
@@ -1901,7 +1789,7 @@ Internet-Draft                  5277 bis                       June 2016
 
 
 
-Gonzalez Prieto, et al. Expires December 4, 2016               [Page 34]
+Gonzalez Prieto, et al. Expires December 16, 2016              [Page 32]
 
 Internet-Draft                  5277 bis                       June 2016
 
@@ -1957,7 +1845,7 @@ Internet-Draft                  5277 bis                       June 2016
 
 
 
-Gonzalez Prieto, et al. Expires December 4, 2016               [Page 35]
+Gonzalez Prieto, et al. Expires December 16, 2016              [Page 33]
 
 Internet-Draft                  5277 bis                       June 2016
 
@@ -1967,7 +1855,7 @@ Internet-Draft                  5277 bis                       June 2016
 3.1.  Data Model for RFC5277 (netmod namespace)
 
    <CODE BEGINS>
-   file "ietf-5277-netmod@2016-06-02.yang"
+   file "ietf-5277-netmod@2016-06-14.yang"
    module ietf-5277-netmod {
      namespace
        "urn:ietf:params:xml:ns:yang:ietf-5277-netmod";
@@ -2009,11 +1897,11 @@ Internet-Draft                  5277 bis                       June 2016
      description
        "Model for RPC in RFC 5277: NETCONF Event Notifications";
 
-     revision 2016-06-02 {
+     revision 2016-06-14 {
 
 
 
-Gonzalez Prieto, et al. Expires December 4, 2016               [Page 36]
+Gonzalez Prieto, et al. Expires December 16, 2016              [Page 34]
 
 Internet-Draft                  5277 bis                       June 2016
 
@@ -2069,7 +1957,7 @@ Internet-Draft                  5277 bis                       June 2016
 
 
 
-Gonzalez Prieto, et al. Expires December 4, 2016               [Page 37]
+Gonzalez Prieto, et al. Expires December 16, 2016              [Page 35]
 
 Internet-Draft                  5277 bis                       June 2016
 
@@ -2125,7 +2013,7 @@ Internet-Draft                  5277 bis                       June 2016
 
 
 
-Gonzalez Prieto, et al. Expires December 4, 2016               [Page 38]
+Gonzalez Prieto, et al. Expires December 16, 2016              [Page 36]
 
 Internet-Draft                  5277 bis                       June 2016
 
@@ -2170,7 +2058,7 @@ Internet-Draft                  5277 bis                       June 2016
 3.2.  Data Model for RFC5277 (netconf namespace)
 
    <CODE BEGINS>
-   file "ietf-5277-netconf@2016-06-02.yang"
+   file "ietf-5277-netconf@2016-06-14.yang"
    module ietf-5277-netconf {
      namespace
        "urn:ietf:params:xml:ns:yang:ietf-5277-netconf";
@@ -2181,7 +2069,7 @@ Internet-Draft                  5277 bis                       June 2016
 
 
 
-Gonzalez Prieto, et al. Expires December 4, 2016               [Page 39]
+Gonzalez Prieto, et al. Expires December 16, 2016              [Page 37]
 
 Internet-Draft                  5277 bis                       June 2016
 
@@ -2220,7 +2108,7 @@ Internet-Draft                  5277 bis                       June 2016
        "Model for RPCs and Notifications in RFC 5277: NETCONF Event
         Notifications";
 
-     revision 2016-06-02 {
+     revision 2016-06-14 {
        description
          "Model for RPC in RFC 5277: NETCONF Event Notifications";
        reference
@@ -2237,7 +2125,7 @@ Internet-Draft                  5277 bis                       June 2016
 
 
 
-Gonzalez Prieto, et al. Expires December 4, 2016               [Page 40]
+Gonzalez Prieto, et al. Expires December 16, 2016              [Page 38]
 
 Internet-Draft                  5277 bis                       June 2016
 
@@ -2293,7 +2181,7 @@ Internet-Draft                  5277 bis                       June 2016
 
 
 
-Gonzalez Prieto, et al. Expires December 4, 2016               [Page 41]
+Gonzalez Prieto, et al. Expires December 16, 2016              [Page 39]
 
 Internet-Draft                  5277 bis                       June 2016
 
@@ -2349,7 +2237,7 @@ Internet-Draft                  5277 bis                       June 2016
 
 
 
-Gonzalez Prieto, et al. Expires December 4, 2016               [Page 42]
+Gonzalez Prieto, et al. Expires December 16, 2016              [Page 40]
 
 Internet-Draft                  5277 bis                       June 2016
 
@@ -2384,7 +2272,7 @@ Internet-Draft                  5277 bis                       June 2016
 3.3.  Data Model for RFC5277-bis Extensions
 
   <CODE BEGINS>
-  file "ietf-event-notifications@2016-06-02.yang"
+  file "ietf-event-notifications@2016-06-14.yang"
   module ietf-event-notifications {
     namespace
       "urn:ietf:params:xml:ns:yang:ietf-event-notifications";
@@ -2405,7 +2293,7 @@ Internet-Draft                  5277 bis                       June 2016
 
 
 
-Gonzalez Prieto, et al. Expires December 4, 2016               [Page 43]
+Gonzalez Prieto, et al. Expires December 16, 2016              [Page 41]
 
 Internet-Draft                  5277 bis                       June 2016
 
@@ -2445,7 +2333,7 @@ Internet-Draft                  5277 bis                       June 2016
       "This module contains conceptual YANG specifications
        for NETCONF Event Notifications.";
 
-    revision 2016-06-02 {
+    revision 2016-06-14 {
       description
         "Initial version. Model for NETCONF Notifications (bis)";
       reference
@@ -2461,7 +2349,7 @@ Internet-Draft                  5277 bis                       June 2016
 
 
 
-Gonzalez Prieto, et al. Expires December 4, 2016               [Page 44]
+Gonzalez Prieto, et al. Expires December 16, 2016              [Page 42]
 
 Internet-Draft                  5277 bis                       June 2016
 
@@ -2517,7 +2405,7 @@ Internet-Draft                  5277 bis                       June 2016
 
 
 
-Gonzalez Prieto, et al. Expires December 4, 2016               [Page 45]
+Gonzalez Prieto, et al. Expires December 16, 2016              [Page 43]
 
 Internet-Draft                  5277 bis                       June 2016
 
@@ -2573,7 +2461,7 @@ Internet-Draft                  5277 bis                       June 2016
 
 
 
-Gonzalez Prieto, et al. Expires December 4, 2016               [Page 46]
+Gonzalez Prieto, et al. Expires December 16, 2016              [Page 44]
 
 Internet-Draft                  5277 bis                       June 2016
 
@@ -2629,7 +2517,7 @@ Internet-Draft                  5277 bis                       June 2016
 
 
 
-Gonzalez Prieto, et al. Expires December 4, 2016               [Page 47]
+Gonzalez Prieto, et al. Expires December 16, 2016              [Page 45]
 
 Internet-Draft                  5277 bis                       June 2016
 
@@ -2685,7 +2573,7 @@ Internet-Draft                  5277 bis                       June 2016
 
 
 
-Gonzalez Prieto, et al. Expires December 4, 2016               [Page 48]
+Gonzalez Prieto, et al. Expires December 16, 2016              [Page 46]
 
 Internet-Draft                  5277 bis                       June 2016
 
@@ -2741,7 +2629,7 @@ Internet-Draft                  5277 bis                       June 2016
 
 
 
-Gonzalez Prieto, et al. Expires December 4, 2016               [Page 49]
+Gonzalez Prieto, et al. Expires December 16, 2016              [Page 47]
 
 Internet-Draft                  5277 bis                       June 2016
 
@@ -2797,7 +2685,7 @@ Internet-Draft                  5277 bis                       June 2016
 
 
 
-Gonzalez Prieto, et al. Expires December 4, 2016               [Page 50]
+Gonzalez Prieto, et al. Expires December 16, 2016              [Page 48]
 
 Internet-Draft                  5277 bis                       June 2016
 
@@ -2853,7 +2741,7 @@ Internet-Draft                  5277 bis                       June 2016
 
 
 
-Gonzalez Prieto, et al. Expires December 4, 2016               [Page 51]
+Gonzalez Prieto, et al. Expires December 16, 2016              [Page 49]
 
 Internet-Draft                  5277 bis                       June 2016
 
@@ -2909,7 +2797,7 @@ Internet-Draft                  5277 bis                       June 2016
 
 
 
-Gonzalez Prieto, et al. Expires December 4, 2016               [Page 52]
+Gonzalez Prieto, et al. Expires December 16, 2016              [Page 50]
 
 Internet-Draft                  5277 bis                       June 2016
 
@@ -2965,7 +2853,7 @@ Internet-Draft                  5277 bis                       June 2016
 
 
 
-Gonzalez Prieto, et al. Expires December 4, 2016               [Page 53]
+Gonzalez Prieto, et al. Expires December 16, 2016              [Page 51]
 
 Internet-Draft                  5277 bis                       June 2016
 
@@ -3021,7 +2909,7 @@ Internet-Draft                  5277 bis                       June 2016
 
 
 
-Gonzalez Prieto, et al. Expires December 4, 2016               [Page 54]
+Gonzalez Prieto, et al. Expires December 16, 2016              [Page 52]
 
 Internet-Draft                  5277 bis                       June 2016
 
@@ -3077,7 +2965,7 @@ Internet-Draft                  5277 bis                       June 2016
 
 
 
-Gonzalez Prieto, et al. Expires December 4, 2016               [Page 55]
+Gonzalez Prieto, et al. Expires December 16, 2016              [Page 53]
 
 Internet-Draft                  5277 bis                       June 2016
 
@@ -3133,7 +3021,7 @@ Internet-Draft                  5277 bis                       June 2016
 
 
 
-Gonzalez Prieto, et al. Expires December 4, 2016               [Page 56]
+Gonzalez Prieto, et al. Expires December 16, 2016              [Page 54]
 
 Internet-Draft                  5277 bis                       June 2016
 
@@ -3189,7 +3077,7 @@ Internet-Draft                  5277 bis                       June 2016
 
 
 
-Gonzalez Prieto, et al. Expires December 4, 2016               [Page 57]
+Gonzalez Prieto, et al. Expires December 16, 2016              [Page 55]
 
 Internet-Draft                  5277 bis                       June 2016
 
@@ -3245,7 +3133,7 @@ Internet-Draft                  5277 bis                       June 2016
 
 
 
-Gonzalez Prieto, et al. Expires December 4, 2016               [Page 58]
+Gonzalez Prieto, et al. Expires December 16, 2016              [Page 56]
 
 Internet-Draft                  5277 bis                       June 2016
 
@@ -3301,7 +3189,7 @@ Internet-Draft                  5277 bis                       June 2016
 
 
 
-Gonzalez Prieto, et al. Expires December 4, 2016               [Page 59]
+Gonzalez Prieto, et al. Expires December 16, 2016              [Page 57]
 
 Internet-Draft                  5277 bis                       June 2016
 
@@ -3357,7 +3245,7 @@ Internet-Draft                  5277 bis                       June 2016
 
 
 
-Gonzalez Prieto, et al. Expires December 4, 2016               [Page 60]
+Gonzalez Prieto, et al. Expires December 16, 2016              [Page 58]
 
 Internet-Draft                  5277 bis                       June 2016
 
@@ -3398,7 +3286,7 @@ Internet-Draft                  5277 bis                       June 2016
        <session-id>4</session-id>
    </hello>
 
-                         Figure 24: Hello message
+                         Figure 22: Hello message
 
    Clients that only support [RFC5277] recognize capability
    "urn:ietf:params:netconf:capability:notification:1.0" and ignore
@@ -3413,7 +3301,7 @@ Internet-Draft                  5277 bis                       June 2016
 
 
 
-Gonzalez Prieto, et al. Expires December 4, 2016               [Page 61]
+Gonzalez Prieto, et al. Expires December 16, 2016              [Page 59]
 
 Internet-Draft                  5277 bis                       June 2016
 
@@ -3469,7 +3357,7 @@ Internet-Draft                  5277 bis                       June 2016
 
 
 
-Gonzalez Prieto, et al. Expires December 4, 2016               [Page 62]
+Gonzalez Prieto, et al. Expires December 16, 2016              [Page 60]
 
 Internet-Draft                  5277 bis                       June 2016
 
@@ -3478,9 +3366,115 @@ Internet-Draft                  5277 bis                       June 2016
    For instance, in [netconf-yang-push] each of the elements in its data
    plane notifications must also go through access control.
 
-6.  References
+6.  Issues that are currently being worked and resolved
 
-6.1.  Normative References
+6.1.  Unresolved and yet-to-be addressed issues
+
+   EN1 - Definition of basic set of Stream types.  What streams are
+   provided and what do they contain (includes default 5277 stream).
+
+   EN2 - Clarify interplay between filter definitions and different
+   streams.  Includes information in subtrees of event payloads.
+
+   EN3 - Mechanisms for diagnostics, e.g. deal with dropped updates,
+   monitoring when they occur, etc
+
+   EN4 - How to allow for seamless integration with non-standard
+   encodings and transports (like GPB/GRPC).  Specify requirements
+   encoding and transport must meet, provide examples.
+
+   EN5 - Along with Netconf-notif, should this draft obsolete 5277 or be
+   in parallel with it?
+
+   EN6 - Stream discovery.  Are adjustments needed for maximal transport
+   independence?
+
+   EN7 - Detecting loss of a sequential update notification, and
+   mechanisms to resend.  Implications to transports must be thought
+   through.
+
+   EN8 - Should we have a mandatory transport?
+
+6.2.  Agreement in principal
+
+   EN9 - Multiple receivers per Configured Subscription is ok.
+
+   EN10 - Replay support will be provided for selected stream types
+   (modify vs. delete)
+
+   EN11 - Required layering security requirements/considerations will be
+   added into the YANG model for Configured Subscriptions.  It will be
+   up to the transport to meet these requirements.
+
+   EN12 - Test-only option for a subscription is desired.  But it still
+   needs to be defined.
+
+
+
+
+
+Gonzalez Prieto, et al. Expires December 16, 2016              [Page 61]
+
+Internet-Draft                  5277 bis                       June 2016
+
+
+   EN13 - RFC6241 Subtree-filter definition in 5277bis cannot apply to
+   elements of an event.  Must explicitly define how 6241 doesn't apply
+   filtering within a 5277bis event.
+
+   EN14 - Ensure that Configured Subscriptions are fully defined in YANG
+   model.
+
+6.3.  Resolved Issues
+
+   EN15 - Term for Dynamic and Static Subscriptions (move to
+   "Configured")
+
+6.4.  Editorial To-Dos
+
+   Update examples.  Examples are not in synch with the current model.
+
+   Remove overlap with transport specifics, specifically NETCONF.  The
+   current draft revision is "self-contained" and assumes NETCONF as a
+   transport.  It does not yet reflect the breakout of transport
+   mappings into a separate draft.
+
+7.  Acknowledgments
+
+   We would like to acknowledge the following people for their valuable
+   comments, discussions, and feedback:
+
+   o  Andy Bierman, YumaWorks
+
+   o  Yang Geng, Huawei
+
+   o  Peipei Guo, Huawei
+
+   o  Susan Hares, Huawei
+
+   o  Tim Jenkins, Cisco
+
+   o  Balazs Lengyel, Ericsson
+
+   o  Kent Watsen, Juniper
+
+   o  Walker, Huawei
+
+8.  References
+
+
+
+
+
+
+
+
+Gonzalez Prieto, et al. Expires December 16, 2016              [Page 62]
+
+Internet-Draft                  5277 bis                       June 2016
+
+
+8.1.  Normative References
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
@@ -3510,7 +3504,7 @@ Internet-Draft                  5277 bis                       June 2016
               DOI 10.17487/RFC6536, March 2012,
               <http://www.rfc-editor.org/info/rfc6536>.
 
-6.2.  Informative References
+8.2.  Informative References
 
    [netconf-yang-push]
               Clemm, Alexander., Gonzalez Prieto, Alberto., Voit, Eric.,
@@ -3519,23 +3513,21 @@ Internet-Draft                  5277 bis                       June 2016
               <https://datatracker.ietf.org/doc/draft-ietf-netconf-yang-
               push/>.
 
-
-
-
-
-
-
-Gonzalez Prieto, et al. Expires December 4, 2016               [Page 63]
-
-Internet-Draft                  5277 bis                       June 2016
-
-
 Authors' Addresses
 
    Alberto Gonzalez Prieto
    Cisco Systems
 
    Email: albertgo@cisco.com
+
+
+
+
+
+
+Gonzalez Prieto, et al. Expires December 16, 2016              [Page 63]
+
+Internet-Draft                  5277 bis                       June 2016
 
 
    Alexander Clemm
@@ -3581,4 +3573,12 @@ Authors' Addresses
 
 
 
-Gonzalez Prieto, et al. Expires December 4, 2016               [Page 64]
+
+
+
+
+
+
+
+
+Gonzalez Prieto, et al. Expires December 16, 2016              [Page 64]
