@@ -1,6 +1,10 @@
 
    *** PRE-DRAFT - INTERNAL DISCUSSIONS ONLY ***  
 
+
+
+
+
 NETCONF                                                         A. Clemm
 Internet-Draft                                                    Huawei
 Intended status: Standards Track                                 E. Voit
@@ -41,7 +45,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on August 6, 2017.
+   This Internet-Draft will expire on August 12, 2017.
 
 Copyright Notice
 
@@ -85,7 +89,7 @@ Table of Contents
    2.  Definitions and Acronyms  . . . . . . . . . . . . . . . . . .   5
    3.  Solution Overview . . . . . . . . . . . . . . . . . . . . . .   6
      3.1.  Subscription Model  . . . . . . . . . . . . . . . . . . .   6
-     3.2.  Negotiation of Subscription Policies  . . . . . . . . . .   8
+     3.2.  Negotiation of Subscription Policies  . . . . . . . . . .   7
      3.3.  On-Change Considerations  . . . . . . . . . . . . . . . .   8
      3.4.  Data Encodings  . . . . . . . . . . . . . . . . . . . . .   9
      3.5.  YANG object filters . . . . . . . . . . . . . . . . . . .  10
@@ -93,18 +97,18 @@ Table of Contents
      3.7.  Subscription management . . . . . . . . . . . . . . . . .  15
      3.8.  Other considerations  . . . . . . . . . . . . . . . . . .  16
    4.  A YANG data model for management of datastore push
-       subscriptions . . . . . . . . . . . . . . . . . . . . . . . .  19
-     4.1.  Overview  . . . . . . . . . . . . . . . . . . . . . . . .  19
+       subscriptions . . . . . . . . . . . . . . . . . . . . . . . .  20
+     4.1.  Overview  . . . . . . . . . . . . . . . . . . . . . . . .  20
      4.2.  Filters . . . . . . . . . . . . . . . . . . . . . . . . .  26
-     4.3.  Subscription configuration  . . . . . . . . . . . . . . .  26
-     4.4.  Notifications . . . . . . . . . . . . . . . . . . . . . .  27
-     4.5.  RPCs  . . . . . . . . . . . . . . . . . . . . . . . . . .  29
-   5.  YANG module . . . . . . . . . . . . . . . . . . . . . . . . .  34
-   6.  Security Considerations . . . . . . . . . . . . . . . . . . .  46
-   7.  Acknowledgments . . . . . . . . . . . . . . . . . . . . . . .  47
-   8.  References  . . . . . . . . . . . . . . . . . . . . . . . . .  47
-     8.1.  Normative References  . . . . . . . . . . . . . . . . . .  47
-     8.2.  Informative References  . . . . . . . . . . . . . . . . .  48
+     4.3.  Subscription configuration  . . . . . . . . . . . . . . .  27
+     4.4.  Notifications . . . . . . . . . . . . . . . . . . . . . .  28
+     4.5.  RPCs  . . . . . . . . . . . . . . . . . . . . . . . . . .  30
+   5.  YANG module . . . . . . . . . . . . . . . . . . . . . . . . .  35
+   6.  Security Considerations . . . . . . . . . . . . . . . . . . .  48
+   7.  Acknowledgments . . . . . . . . . . . . . . . . . . . . . . .  48
+   8.  References  . . . . . . . . . . . . . . . . . . . . . . . . .  48
+     8.1.  Normative References  . . . . . . . . . . . . . . . . . .  48
+     8.2.  Informative References  . . . . . . . . . . . . . . . . .  49
 
 
 
@@ -113,17 +117,15 @@ Clemm, et al.            Expires August 12, 2017                [Page 2]
 Internet-Draft                  YANG-Push                  February 2017
 
 
-   Appendix A.  Technologies to be considered for future iterations   48
+   Appendix A.  Technologies to be considered for future iterations   50
      A.1.  Proxy YANG Subscription when the Subscriber and Receiver
-           are different . . . . . . . . . . . . . . . . . . . . . .  48
-     A.2.  OpState and Filters . . . . . . . . . . . . . . . . . . .  49
-     A.3.  Splitting push updates  . . . . . . . . . . . . . . . . .  49
-     A.4.  Potential Subscription Parameters . . . . . . . . . . . .  50
-   Appendix B.  Issues that are currently being worked and resolved   50
-     B.1.  Unresolved and yet-to-be addressed issues . . . . . . . .  50
-     B.2.  Agreement in principal  . . . . . . . . . . . . . . . . .  51
-   Appendix C.  Changes between revisions  . . . . . . . . . . . . .  51
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  52
+           are different . . . . . . . . . . . . . . . . . . . . . .  50
+     A.2.  OpState and Filters . . . . . . . . . . . . . . . . . . .  50
+     A.3.  Splitting push updates  . . . . . . . . . . . . . . . . .  51
+     A.4.  Potential Subscription Parameters . . . . . . . . . . . .  51
+   Appendix B.  Issues that are currently being worked and resolved   52
+   Appendix C.  Changes between revisions  . . . . . . . . . . . . .  52
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  53
 
 1.  Introduction
 
@@ -161,6 +163,8 @@ Internet-Draft                  YANG-Push                  February 2017
       devices at the same time, resulting in offset polling intervals
       which again make data hard to compare.
 
+   A more effective alternative to polling is when an application can
+   request to be automatically updated on current relevant content of a
 
 
 
@@ -169,8 +173,6 @@ Clemm, et al.            Expires August 12, 2017                [Page 3]
 Internet-Draft                  YANG-Push                  February 2017
 
 
-   A more effective alternative to polling is when an application can
-   request to be automatically updated on current relevant content of a
    datastore.  If such a request is accepted, interesting updates will
    subsequently be pushed from that datastore.
 
@@ -217,6 +219,8 @@ Internet-Draft                  YANG-Push                  February 2017
       subscribe to datastore updates.  The subscription allows clients
       to specify which data they are interested in, what types of
       updates (e.g. create, delete, modify), and to provide filter
+      criteria that data must meet for updates to be sent.  Furthermore,
+      subscriptions can specify a policy that directs when updates are
 
 
 
@@ -225,8 +229,6 @@ Clemm, et al.            Expires August 12, 2017                [Page 4]
 Internet-Draft                  YANG-Push                  February 2017
 
 
-      criteria that data must meet for updates to be sent.  Furthermore,
-      subscriptions can specify a policy that directs when updates are
       provided.  For example, a client may request to be updated
       periodically in certain intervals, or whenever data changes occur.
 
@@ -272,6 +274,8 @@ Internet-Draft                  YANG-Push                  February 2017
 
    Update: A data item containing the current value of a data node.
 
+   Update notification: An Event Notification including those data node
+   update(s) to be pushed in order to meet the obligations of a single
 
 
 
@@ -281,8 +285,6 @@ Clemm, et al.            Expires August 12, 2017                [Page 5]
 Internet-Draft                  YANG-Push                  February 2017
 
 
-   Update notification: An Event Notification including those data node
-   update(s) to be pushed in order to meet the obligations of a single
    Subscription.  All included data node updates must reflect the state
    of a Datastore at a snapshot in time.
 
@@ -329,6 +331,8 @@ Internet-Draft                  YANG-Push                  February 2017
       exclude.  The publisher must only send to the receiver those data
       node updates that can traverse applied filter.  Filters can be
       specified "inline" as part of the subscription, or can be
+      configured separately and referenced by a subscription in order to
+      facilitate reuse of complex filters.
 
 
 
@@ -336,9 +340,6 @@ Clemm, et al.            Expires August 12, 2017                [Page 6]
 
 Internet-Draft                  YANG-Push                  February 2017
 
-
-      configured separately and referenced by a subscription in order to
-      facilitate reuse of complex filters.
 
    o  A subscription policy definition regarding the update trigger when
       to send new update notifications.
@@ -383,8 +384,11 @@ Internet-Draft                  YANG-Push                  February 2017
    interesting.  Augmentations to the subscription data model may be
    used for this.
 
+3.2.  Negotiation of Subscription Policies
 
-
+   Dynamic subscriptions must support a simple negotiation between
+   subscribers and publishers for subscription parameters.  This
+   negotiation is limited to a single pair of subscription request and
 
 
 
@@ -393,11 +397,6 @@ Clemm, et al.            Expires August 12, 2017                [Page 7]
 Internet-Draft                  YANG-Push                  February 2017
 
 
-3.2.  Negotiation of Subscription Policies
-
-   Dynamic subscriptions must support a simple negotiation between
-   subscribers and publishers for subscription parameters.  This
-   negotiation is limited to a single pair of subscription request and
    response messages.  For negative response messages, the publisher
    SHOULD include in the returned error what subscription parameters
    would have been accepted for the request.  The returned acceptable
@@ -442,6 +441,11 @@ Internet-Draft                  YANG-Push                  February 2017
    on-change subscription requests will tend to be directed at very
    specific, targeted subtrees with only few objects.
 
+   Any updates for an on-change subscription will include only objects
+   for which a change was detected.  To avoid flooding receivers with
+   repeated updates for fast-changing objects, or objects with
+   oscillating values, an on-change subscription allows for the
+
 
 
 Clemm, et al.            Expires August 12, 2017                [Page 8]
@@ -449,10 +453,6 @@ Clemm, et al.            Expires August 12, 2017                [Page 8]
 Internet-Draft                  YANG-Push                  February 2017
 
 
-   Any updates for an on-change subscription will include only objects
-   for which a change was detected.  To avoid flooding receivers with
-   repeated updates for fast-changing objects, or objects with
-   oscillating values, an on-change subscription allows for the
    definition of a dampening period.  Once an update for a given object
    is sent, no other updates for this particular object are sent until
    the end of the dampening period.  Values sent at the end of the
@@ -497,6 +497,10 @@ Internet-Draft                  YANG-Push                  February 2017
    in [RFC7951].  This encoding is valid JSON, but also has special
    encoding rules to identify module namespaces and provide consistent
    type processing of YANG data.
+
+
+
+
 
 
 
@@ -1031,19 +1035,70 @@ Internet-Draft                  YANG-Push                  February 2017
    different permissions than its parent, or (b) read access permissions
    have been changed on nodes under the target node for the subscriber.
 
-3.8.5.  Not Notifiable YANG Objects
+3.8.5.  Identifying on-change notifiable YANG objects
 
-   In some cases, a publisher supporting "on-change" notifications may
-   not be able to push updates for some object types "on-change".
-   Reasons for this might be that the value of the data node changes
-   frequently (e.g., a received-octets-counter), that small object
-   changes are frequent and meaningless (e.g., a temperature gauge
-   changing 0.1 degrees), or that the implementation is not capable of
-   on-change notification of an object type.
+   In some cases, a publisher supporting on-change notifications may not
+   be able to push updates for some object types on-change.  Reasons for
+   this might be that the value of the data node changes frequently
+   (e.g., a received-octets-counter), that small object changes are
+   frequent and meaningless (e.g., a temperature gauge changing 0.1
+   degrees), or that the implementation is not capable of on-change
+   notification of an object type.
 
-   The default assumption is that changes on all data nodes will be
-   reported on-change.  However if a certain data node cannot do this,
-   it SHOULD be marked with the YANG extension not-notifiable-on-change.
+   Support for on-change notification is usually specific to the
+   individual YANG model and/or implementation so it is possible to
+   define in design time.  System integrators need this information
+   (without reading any data from a live node).
+
+   The default assumption is that no data nodes support on-change
+   notification.  Schema nodes and subtrees that support on-change
+   notifications MUST be marked as such with the YANG extension
+   notifiable-on-change.
+
+   If the model designer wants to add the notifiable-on-change statement
+   to an existing module, but want's to avoid modifying the text of the
+   existing module, the notifiable-on-change statement may be added
+   using deviation statements.
+
+
+
+
+
+Clemm, et al.            Expires August 12, 2017               [Page 19]
+
+Internet-Draft                  YANG-Push                  February 2017
+
+
+    extension notifiable-on-change {
+      Indicates whether changes to the data node are reportable in
+      on-change subscriptions.
+
+      The statement MUST only be a substatement of the leaf, leaf-list,
+      container, list, anyxml, anydata  statements. Zero or One
+      notifiable-on-change statement is allowed per parent statement. NO
+      substatements are allowed.
+
+      The argument is a boolean value indicating whether on-change
+      notifications are supported. If notifiable-on-change is not
+      specified, the default is the same as the parent data node's
+      value. For top level data nodes the default value is false.";
+
+      argument value;
+    }
+
+                      Figure 9: Notifiable Extension
+
+   When an on-change subscription is established data-nodes marked with
+   notifiable-on-change false; will be automatically filtered out.  This
+   also means that authorization checks need be performed on them.
+
+    deviation /sys:system/sys:system-time {
+      deviate add {
+         yp:notifiable-on-change false;
+      }
+    }
+
+                       Figure 10: Deviation Example
 
 4.  A YANG data model for management of datastore push subscriptions
 
@@ -1057,62 +1112,11 @@ Internet-Draft                  YANG-Push                  February 2017
    the middle enclose choice and case nodes.  A "+" at the end of a line
    indicates that the line is to be concatenated with the subsequent
    line.  New YANG tree notation is the i] which indicates that the node
-
-
-
-Clemm, et al.            Expires August 12, 2017               [Page 19]
-
-Internet-Draft                  YANG-Push                  February 2017
-
-
    in that line has been brought in / imported from another model, and
    an (a) which indicates this is the specific imported node augmented.
    In the figure below, all have been imported from 5277bis.  The model
    consists mostly of augmentations to RPCs and notifications defined in
-   the data model for subscriptions for event notifications of
-   [I-D:netconf-sub-notif].
 
- (Note: the yp indicates augmentations from yang push above and
- beyond the event-notifications model)
- module: ietf-subscribed-notifications
-     +--ro streams
-     |  +--ro stream*   stream
-     +--rw filters
-     |  +--rw filter* [identifier]
-     |     +--rw identifier           filter-id
-     |     +--rw (filter-type)?
-     |        +--:(by-reference)
-     |        |  +--rw filter-ref?          filter-ref
-     |        +--:(event-filter)
-     |        |  +--rw filter?
-     |        +--:(yp:update-filter)
-     |           +--rw (yp:update-filter)?
-     |              +--:(yp:subtree)
-     |              |  +--rw yp:subtree-filter?
-     |              +--:(yp:xpath)
-     |                 +--rw yp:xpath-filter?     yang:xpath1.0
-     +--rw subscription-config {configured-subscriptions}?
-     |  +--rw subscription* [identifier]
-     |     +--rw identifier              subscription-id
-     |     +--rw stream?                 stream
-     |     +--rw encoding?               encoding
-     |     +--rw stop-time?              yang:date-and-time
-     |     +--rw (filter-type)?
-     |     |  +--:(by-reference)
-     |     |  |  +--rw filter-ref?             filter-ref
-     |     |  +--:(event-filter)
-     |     |  |  +--rw filter?
-     |     |  +--:(yp:update-filter)
-     |     |     +--rw (yp:update-filter)?
-     |     |        +--:(yp:subtree)
-     |     |        |  +--rw yp:subtree-filter?
-     |     |        +--:(yp:xpath)
-     |     |           +--rw yp:xpath-filter?        yang:xpath1.0
-     |     +--rw receivers
-     |     |  +--rw receiver* [address]
-     |     |     +--rw address     inet:host
-     |     |     +--rw port        inet:port-number
-     |     |     +--rw protocol?   transport-protocol
 
 
 
@@ -1121,54 +1125,54 @@ Clemm, et al.            Expires August 12, 2017               [Page 20]
 Internet-Draft                  YANG-Push                  February 2017
 
 
-     |     +--rw (notification-origin)?
-     |     |  +--:(interface-originated)
-     |     |  |  +--rw source-interface?       if:interface-ref
-     |     |  +--:(address-originated)
-     |     |     +--rw source-vrf?             string
-     |     |     +--rw source-address?         inet:ip-address-no-zone
-     |     +--rw (yp:update-trigger)?
-     |     |  +--:(yp:periodic)
-     |     |  |  +--rw yp:period               yang:timeticks
-     |     |  |  +--rw yp:anchor-time?         yang:date-and-time
-     |     |  +--:(yp:on-change) {on-change}?
-     |     |     +--rw yp:dampening-period     yang:timeticks
-     |     |     +--rw yp:no-synch-on-start?   empty
-     |     |     +--rw yp:excluded-change*     change-type
-     |     +--rw yp:dscp?                inet:dscp
-     |     +--rw yp:weighting?           uint8
-     |     +--rw yp:dependency?          sn:subscription-id
-     +--ro subscriptions
-        +--ro subscription* [identifier]
-           +--ro identifier                 subscription-id
-           +--ro configured-subscription?
-           |                       empty {configured-subscriptions}?
-           +--ro stream?                    stream
-           +--ro encoding?                  encoding
-           +--ro replay-start-time?         yang:date-and-time
-           +--ro stop-time?                 yang:date-and-time
-           +--ro (filter-type)?
-           |  +--:(by-reference)
-           |  |  +--ro filter-ref?                filter-ref
-           |  +--:(event-filter)
-           |  |  +--ro filter?
-           |  +--:(yp:update-filter)
-           |     +--ro (yp:update-filter)?
-           |        +--:(yp:subtree)
-           |        |  +--ro yp:subtree-filter?
-           |        +--:(yp:xpath)
-           |           +--ro yp:xpath-filter?           yang:xpath1.0
-           +--ro (notification-origin)?
-           |  +--:(interface-originated)
-           |  |  +--ro source-interface?          if:interface-ref
-           |  +--:(address-originated)
-           |     +--ro source-vrf?               string
-           |     +--ro source-address?           inet:ip-address-no-zone
-           +--ro receivers
-           |  +--ro receiver* [address]
-           |     +--ro address                   inet:host
-           |     +--ro port                      inet:port-number
-           |     +--ro protocol?                 transport-protocol
+   the data model for subscriptions for event notifications of
+   [I-D:netconf-sub-notif].
+
+  (Note: the yp indicates augmentations from yang push above and
+  beyond the event-notifications model)
+  module: ietf-subscribed-notifications
+      +--ro streams
+      |  +--ro stream*   stream
+      +--rw filters
+      |  +--rw filter* [identifier]
+      |     +--rw identifier           filter-id
+      |     +--rw (filter-type)?
+      |        +--:(by-reference)
+      |        |  +--rw filter-ref?          filter-ref
+      |        +--:(event-filter)
+      |        |  +--rw filter?
+      |        +--:(yp:update-filter)
+      |           +--rw (yp:update-filter)?
+      |              +--:(yp:subtree)
+      |              |  +--rw yp:subtree-filter?
+      |              +--:(yp:xpath)
+      |                 +--rw yp:xpath-filter?     yang:xpath1.0
+      +--rw subscription-config {configured-subscriptions}?
+      |  +--rw subscription* [identifier]
+      |     +--rw identifier              subscription-id
+      |     +--rw stream?                 stream
+      |     +--rw encoding?               encoding
+      |     +--rw stop-time?              yang:date-and-time
+      |     +--rw (filter-type)?
+      |     |  +--:(by-reference)
+      |     |  |  +--rw filter-ref?             filter-ref
+      |     |  +--:(event-filter)
+      |     |  |  +--rw filter?
+      |     |  +--:(yp:update-filter)
+      |     |     +--rw (yp:update-filter)?
+      |     |        +--:(yp:subtree)
+      |     |        |  +--rw yp:subtree-filter?
+      |     |        +--:(yp:xpath)
+      |     |           +--rw yp:xpath-filter?        yang:xpath1.0
+      |     +--rw receivers
+      |     |  +--rw receiver* [address]
+      |     |     +--rw address     inet:host
+      |     |     +--rw port        inet:port-number
+      |     |     +--rw protocol?   transport-protocol
+      |     +--rw (notification-origin)?
+      |     |  +--:(interface-originated)
+      |     |  |  +--rw source-interface?       if:interface-ref
+      |     |  +--:(address-originated)
 
 
 
@@ -1177,54 +1181,54 @@ Clemm, et al.            Expires August 12, 2017               [Page 21]
 Internet-Draft                  YANG-Push                  February 2017
 
 
-           |     +--ro pushed-notifications?     yang:counter64
-           |     +--ro excluded-notifications?   yang:counter64
-           +--ro subscription-status?       subscription-status
-           +--ro (yp:update-trigger)?
-           |  +--:(yp:periodic)
-           |  |  +--ro yp:period                  yang:timeticks
-           |  |  +--ro yp:anchor-time?            yang:date-and-time
-           |  +--:(yp:on-change) {on-change}?
-           |     +--ro yp:dampening-period        yang:timeticks
-           |     +--ro yp:no-synch-on-start?      empty
-           |     +--ro yp:excluded-change*        change-type
-           +--ro yp:dscp?                   inet:dscp
-           +--ro yp:weighting?              uint8
-           +--ro yp:dependency?             sn:subscription-id
-
-   rpcs:
-     +---x establish-subscription
-     |  +---w input
-     |  |  +---w stream?                 stream
-     |  |  +---w encoding?               encoding
-     |  |  +---w replay-start-time?      yang:date-and-time
-     |  |  +---w stop-time?              yang:date-and-time
-     |  |  +---w (filter-type)?
-     |  |  |  +--:(by-reference)
-     |  |  |  |  +---w filter-ref?             filter-ref
-     |  |  |  +--:(event-filter)
-     |  |  |  |  +---w filter?
-     |  |  |  +--:(yp:update-filter)
-     |  |  |     +---w (yp:update-filter)?
-     |  |  |        +--:(yp:subtree)
-     |  |  |        |  +---w yp:subtree-filter?
-     |  |  |        +--:(yp:xpath)
-     |  |  |           +---w yp:xpath-filter?        yang:xpath1.0
-     |  |  +---w (yp:update-trigger)?
-     |  |  |  +--:(yp:periodic)
-     |  |  |  |  +---w yp:period               yang:timeticks
-     |  |  |  |  +---w yp:anchor-time?         yang:date-and-time
-     |  |  |  +--:(yp:on-change) {on-change}?
-     |  |  |     +---w yp:dampening-period     yang:timeticks
-     |  |  |     +---w yp:no-synch-on-start?   empty
-     |  |  |     +---w yp:excluded-change*     change-type
-     |  |  +---w yp:dscp?                inet:dscp
-     |  |  +---w yp:weighting?           uint8
-     |  |  +---w yp:dependency?          sn:subscription-id
-     |  +--ro output
-     |     +--ro subscription-result         subscription-result
-     |     +--ro (result)?
-     |        +--:(no-success)
+      |     |     +--rw source-vrf?             string
+      |     |     +--rw source-address?         inet:ip-address-no-zone
+      |     +--rw (yp:update-trigger)?
+      |     |  +--:(yp:periodic)
+      |     |  |  +--rw yp:period               yang:timeticks
+      |     |  |  +--rw yp:anchor-time?         yang:date-and-time
+      |     |  +--:(yp:on-change) {on-change}?
+      |     |     +--rw yp:dampening-period     yang:timeticks
+      |     |     +--rw yp:no-synch-on-start?   empty
+      |     |     +--rw yp:excluded-change*     change-type
+      |     +--rw yp:dscp?                inet:dscp
+      |     +--rw yp:weighting?           uint8
+      |     +--rw yp:dependency?          sn:subscription-id
+      +--ro subscriptions
+         +--ro subscription* [identifier]
+            +--ro identifier                 subscription-id
+            +--ro configured-subscription?
+            |                       empty {configured-subscriptions}?
+            +--ro stream?                    stream
+            +--ro encoding?                  encoding
+            +--ro replay-start-time?         yang:date-and-time
+            +--ro stop-time?                 yang:date-and-time
+            +--ro (filter-type)?
+            |  +--:(by-reference)
+            |  |  +--ro filter-ref?                filter-ref
+            |  +--:(event-filter)
+            |  |  +--ro filter?
+            |  +--:(yp:update-filter)
+            |     +--ro (yp:update-filter)?
+            |        +--:(yp:subtree)
+            |        |  +--ro yp:subtree-filter?
+            |        +--:(yp:xpath)
+            |           +--ro yp:xpath-filter?           yang:xpath1.0
+            +--ro (notification-origin)?
+            |  +--:(interface-originated)
+            |  |  +--ro source-interface?          if:interface-ref
+            |  +--:(address-originated)
+            |     +--ro source-vrf?              string
+            |     +--ro source-address?          inet:ip-address-no-zone
+            +--ro receivers
+            |  +--ro receiver* [address]
+            |     +--ro address                   inet:host
+            |     +--ro port                      inet:port-number
+            |     +--ro protocol?                 transport-protocol
+            |     +--ro pushed-notifications?     yang:counter64
+            |     +--ro excluded-notifications?   yang:counter64
+            +--ro subscription-status?       subscription-status
+            +--ro (yp:update-trigger)?
 
 
 
@@ -1233,54 +1237,54 @@ Clemm, et al.            Expires August 12, 2017               [Page 22]
 Internet-Draft                  YANG-Push                  February 2017
 
 
-     |        |  +--ro filter-failure?             string
-     |        |  +--ro replay-start-time-hint?     yang:date-and-time
-     |        |  +--ro yp:period-hint?             yang:timeticks
-     |        |  +--ro yp:error-path?              string
-     |        |  +--ro yp:object-count-estimate?   uint32
-     |        |  +--ro yp:object-count-limit?      uint32
-     |        |  +--ro yp:kilobytes-estimate?      uint32
-     |        |  +--ro yp:kilobytes-limit?         uint32
-     |        +--:(success)
-     |           +--ro identifier                  subscription-id
-     +---x modify-subscription
-     |  +---w input
-     |  |  +---w identifier?            subscription-id
-     |  |  +---w stop-time?             yang:date-and-time
-     |  |  +---w (filter-type)?
-     |  |  |  +--:(by-reference)
-     |  |  |  |  +---w filter-ref?            filter-ref
-     |  |  |  +--:(event-filter)
-     |  |  |  |  +---w filter?
-     |  |  |  +--:(yp:update-filter)
-     |  |  |     +---w (yp:update-filter)?
-     |  |  |        +--:(yp:subtree)
-     |  |  |        |  +---w yp:subtree-filter?
-     |  |  |        +--:(yp:xpath)
-     |  |  |           +---w yp:xpath-filter?       yang:xpath1.0
-     |  |  +---w (yp:update-trigger)?
-     |  |     +--:(yp:periodic)
-     |  |     |  +---w yp:period              yang:timeticks
-     |  |     |  +---w yp:anchor-time?        yang:date-and-time
-     |  |     +--:(yp:on-change) {on-change}?
-     |  |        +---w yp:dampening-period    yang:timeticks
-     |  +--ro output
-     |     +--ro subscription-result         subscription-result
-     |     +--ro (result)?
-     |        +--:(no-success)
-     |           +--ro filter-failure?             string
-     |           +--ro yp:period-hint?             yang:timeticks
-     |           +--ro yp:error-path?              string
-     |           +--ro yp:object-count-estimate?   uint32
-     |           +--ro yp:object-count-limit?      uint32
-     |           +--ro yp:kilobytes-estimate?      uint32
-     |           +--ro yp:kilobytes-limit?         uint32
-     +---x delete-subscription
-     |  +---w input
-     |  |  +---w identifier    subscription-id
-     |  +--ro output
-     |     +--ro subscription-result    subscription-result
-     +---x kill-subscription
+            |  +--:(yp:periodic)
+            |  |  +--ro yp:period                  yang:timeticks
+            |  |  +--ro yp:anchor-time?            yang:date-and-time
+            |  +--:(yp:on-change) {on-change}?
+            |     +--ro yp:dampening-period        yang:timeticks
+            |     +--ro yp:no-synch-on-start?      empty
+            |     +--ro yp:excluded-change*        change-type
+            +--ro yp:dscp?                   inet:dscp
+            +--ro yp:weighting?              uint8
+            +--ro yp:dependency?             sn:subscription-id
+
+    rpcs:
+      +---x establish-subscription
+      |  +---w input
+      |  |  +---w stream?                 stream
+      |  |  +---w encoding?               encoding
+      |  |  +---w replay-start-time?      yang:date-and-time
+      |  |  +---w stop-time?              yang:date-and-time
+      |  |  +---w (filter-type)?
+      |  |  |  +--:(by-reference)
+      |  |  |  |  +---w filter-ref?             filter-ref
+      |  |  |  +--:(event-filter)
+      |  |  |  |  +---w filter?
+      |  |  |  +--:(yp:update-filter)
+      |  |  |     +---w (yp:update-filter)?
+      |  |  |        +--:(yp:subtree)
+      |  |  |        |  +---w yp:subtree-filter?
+      |  |  |        +--:(yp:xpath)
+      |  |  |           +---w yp:xpath-filter?        yang:xpath1.0
+      |  |  +---w (yp:update-trigger)?
+      |  |  |  +--:(yp:periodic)
+      |  |  |  |  +---w yp:period               yang:timeticks
+      |  |  |  |  +---w yp:anchor-time?         yang:date-and-time
+      |  |  |  +--:(yp:on-change) {on-change}?
+      |  |  |     +---w yp:dampening-period     yang:timeticks
+      |  |  |     +---w yp:no-synch-on-start?   empty
+      |  |  |     +---w yp:excluded-change*     change-type
+      |  |  +---w yp:dscp?                inet:dscp
+      |  |  +---w yp:weighting?           uint8
+      |  |  +---w yp:dependency?          sn:subscription-id
+      |  +--ro output
+      |     +--ro subscription-result         subscription-result
+      |     +--ro (result)?
+      |        +--:(no-success)
+      |        |  +--ro filter-failure?             string
+      |        |  +--ro replay-start-time-hint?     yang:date-and-time
+      |        |  +--ro yp:period-hint?             yang:timeticks
+      |        |  +--ro yp:error-path?              string
 
 
 
@@ -1289,54 +1293,54 @@ Clemm, et al.            Expires August 12, 2017               [Page 23]
 Internet-Draft                  YANG-Push                  February 2017
 
 
-        +---w input
-        |  +---w identifier    subscription-id
-        +--ro output
-           +--ro subscription-result    subscription-result
-
-   notifications:
-     +---n replay-complete
-     |  +--ro identifier    subscription-id
-     +---n notification-complete
-     |  +--ro identifier    subscription-id
-     +---n subscription-started
-     |  +--ro identifier              subscription-id
-     |  +--ro stream?                 stream
-     |  +--ro encoding?               encoding
-     |  +--ro replay-start-time?      yang:date-and-time
-     |  +--ro stop-time?              yang:date-and-time
-     |  +--ro (filter-type)?
-     |  |  +--:(by-reference)
-     |  |  |  +--ro filter-ref?             filter-ref
-     |  |  +--:(event-filter)
-     |  |  |  +--ro filter?
-     |  |  +--:(yp:update-filter)
-     |  |     +--ro (yp:update-filter)?
-     |  |        +--:(yp:subtree)
-     |  |        |  +--ro yp:subtree-filter?
-     |  |        +--:(yp:xpath)
-     |  |           +--ro yp:xpath-filter?        yang:xpath1.0
-     |  +--ro (yp:update-trigger)?
-     |  |  +--:(yp:periodic)
-     |  |  |  +--ro yp:period               yang:timeticks
-     |  |  |  +--ro yp:anchor-time?         yang:date-and-time
-     |  |  +--:(yp:on-change) {on-change}?
-     |  |     +--ro yp:dampening-period     yang:timeticks
-     |  |     +--ro yp:no-synch-on-start?   empty
-     |  |     +--ro yp:excluded-change*     change-type
-     |  +--ro yp:dscp?                inet:dscp
-     |  +--ro yp:weighting?           uint8
-     |  +--ro yp:dependency?          sn:subscription-id
-     +---n subscription-resumed
-     |  +--ro identifier    subscription-id
-     +---n subscription-modified
-     |  +--ro identifier              subscription-id
-     |  +--ro stream?                 stream
-     |  +--ro encoding?               encoding
-     |  +--ro replay-start-time?      yang:date-and-time
-     |  +--ro stop-time?              yang:date-and-time
-     |  +--ro (filter-type)?
-     |  |  +--:(by-reference)
+      |        |  +--ro yp:object-count-estimate?   uint32
+      |        |  +--ro yp:object-count-limit?      uint32
+      |        |  +--ro yp:kilobytes-estimate?      uint32
+      |        |  +--ro yp:kilobytes-limit?         uint32
+      |        +--:(success)
+      |           +--ro identifier                  subscription-id
+      +---x modify-subscription
+      |  +---w input
+      |  |  +---w identifier?            subscription-id
+      |  |  +---w stop-time?             yang:date-and-time
+      |  |  +---w (filter-type)?
+      |  |  |  +--:(by-reference)
+      |  |  |  |  +---w filter-ref?            filter-ref
+      |  |  |  +--:(event-filter)
+      |  |  |  |  +---w filter?
+      |  |  |  +--:(yp:update-filter)
+      |  |  |     +---w (yp:update-filter)?
+      |  |  |        +--:(yp:subtree)
+      |  |  |        |  +---w yp:subtree-filter?
+      |  |  |        +--:(yp:xpath)
+      |  |  |           +---w yp:xpath-filter?       yang:xpath1.0
+      |  |  +---w (yp:update-trigger)?
+      |  |     +--:(yp:periodic)
+      |  |     |  +---w yp:period              yang:timeticks
+      |  |     |  +---w yp:anchor-time?        yang:date-and-time
+      |  |     +--:(yp:on-change) {on-change}?
+      |  |        +---w yp:dampening-period    yang:timeticks
+      |  +--ro output
+      |     +--ro subscription-result         subscription-result
+      |     +--ro (result)?
+      |        +--:(no-success)
+      |           +--ro filter-failure?             string
+      |           +--ro yp:period-hint?             yang:timeticks
+      |           +--ro yp:error-path?              string
+      |           +--ro yp:object-count-estimate?   uint32
+      |           +--ro yp:object-count-limit?      uint32
+      |           +--ro yp:kilobytes-estimate?      uint32
+      |           +--ro yp:kilobytes-limit?         uint32
+      +---x delete-subscription
+      |  +---w input
+      |  |  +---w identifier    subscription-id
+      |  +--ro output
+      |     +--ro subscription-result    subscription-result
+      +---x kill-subscription
+         +---w input
+         |  +---w identifier    subscription-id
+         +--ro output
+            +--ro subscription-result    subscription-result
 
 
 
@@ -1345,54 +1349,54 @@ Clemm, et al.            Expires August 12, 2017               [Page 24]
 Internet-Draft                  YANG-Push                  February 2017
 
 
-     |  |  |  +--ro filter-ref?             filter-ref
-     |  |  +--:(event-filter)
-     |  |  |  +--ro filter?
-     |  |  +--:(yp:update-filter)
-     |  |     +--ro (yp:update-filter)?
-     |  |        +--:(yp:subtree)
-     |  |        |  +--ro yp:subtree-filter?
-     |  |        +--:(yp:xpath)
-     |  |           +--ro yp:xpath-filter?        yang:xpath1.0
-     |  +--ro (yp:update-trigger)?
-     |  |  +--:(yp:periodic)
-     |  |  |  +--ro yp:period               yang:timeticks
-     |  |  |  +--ro yp:anchor-time?         yang:date-and-time
-     |  |  +--:(yp:on-change) {on-change}?
-     |  |     +--ro yp:dampening-period     yang:timeticks
-     |  |     +--ro yp:no-synch-on-start?   empty
-     |  |     +--ro yp:excluded-change*     change-type
-     |  +--ro yp:dscp?                inet:dscp
-     |  +--ro yp:weighting?           uint8
-     |  +--ro yp:dependency?          sn:subscription-id
-     +---n subscription-terminated
-     |  +--ro identifier        subscription-id
-     |  +--ro error-id          subscription-errors
-     |  +--ro filter-failure?   string
-     +---n subscription-suspended
-        +--ro identifier        subscription-id
-        +--ro error-id          subscription-errors
-        +--ro filter-failure?   string
- module: ietf-yang-push
-
-   notifications:
-     +---n push-update
-     |  +--ro subscription-id       sn:subscription-id
-     |  +--ro time-of-update?       yang:date-and-time
-     |  +--ro updates-not-sent?     empty
-     |  +--ro datastore-contents?
-     +---n push-change-update {on-change}?
-        +--ro subscription-id      sn:subscription-id
-        +--ro time-of-update?      yang:date-and-time
-        +--ro updates-not-sent?    empty
-        +--ro datastore-changes?
-
-                         Figure 9: Model structure
-
-   The components of the model are described in the following
-   subsections.
-
-
+    notifications:
+      +---n replay-complete
+      |  +--ro identifier    subscription-id
+      +---n notification-complete
+      |  +--ro identifier    subscription-id
+      +---n subscription-started
+      |  +--ro identifier              subscription-id
+      |  +--ro stream?                 stream
+      |  +--ro encoding?               encoding
+      |  +--ro replay-start-time?      yang:date-and-time
+      |  +--ro stop-time?              yang:date-and-time
+      |  +--ro (filter-type)?
+      |  |  +--:(by-reference)
+      |  |  |  +--ro filter-ref?             filter-ref
+      |  |  +--:(event-filter)
+      |  |  |  +--ro filter?
+      |  |  +--:(yp:update-filter)
+      |  |     +--ro (yp:update-filter)?
+      |  |        +--:(yp:subtree)
+      |  |        |  +--ro yp:subtree-filter?
+      |  |        +--:(yp:xpath)
+      |  |           +--ro yp:xpath-filter?        yang:xpath1.0
+      |  +--ro (yp:update-trigger)?
+      |  |  +--:(yp:periodic)
+      |  |  |  +--ro yp:period               yang:timeticks
+      |  |  |  +--ro yp:anchor-time?         yang:date-and-time
+      |  |  +--:(yp:on-change) {on-change}?
+      |  |     +--ro yp:dampening-period     yang:timeticks
+      |  |     +--ro yp:no-synch-on-start?   empty
+      |  |     +--ro yp:excluded-change*     change-type
+      |  +--ro yp:dscp?                inet:dscp
+      |  +--ro yp:weighting?           uint8
+      |  +--ro yp:dependency?          sn:subscription-id
+      +---n subscription-resumed
+      |  +--ro identifier    subscription-id
+      +---n subscription-modified
+      |  +--ro identifier              subscription-id
+      |  +--ro stream?                 stream
+      |  +--ro encoding?               encoding
+      |  +--ro replay-start-time?      yang:date-and-time
+      |  +--ro stop-time?              yang:date-and-time
+      |  +--ro (filter-type)?
+      |  |  +--:(by-reference)
+      |  |  |  +--ro filter-ref?             filter-ref
+      |  |  +--:(event-filter)
+      |  |  |  +--ro filter?
+      |  |  +--:(yp:update-filter)
+      |  |     +--ro (yp:update-filter)?
 
 
 
@@ -1401,12 +1405,62 @@ Clemm, et al.            Expires August 12, 2017               [Page 25]
 Internet-Draft                  YANG-Push                  February 2017
 
 
+      |  |        +--:(yp:subtree)
+      |  |        |  +--ro yp:subtree-filter?
+      |  |        +--:(yp:xpath)
+      |  |           +--ro yp:xpath-filter?        yang:xpath1.0
+      |  +--ro (yp:update-trigger)?
+      |  |  +--:(yp:periodic)
+      |  |  |  +--ro yp:period               yang:timeticks
+      |  |  |  +--ro yp:anchor-time?         yang:date-and-time
+      |  |  +--:(yp:on-change) {on-change}?
+      |  |     +--ro yp:dampening-period     yang:timeticks
+      |  |     +--ro yp:no-synch-on-start?   empty
+      |  |     +--ro yp:excluded-change*     change-type
+      |  +--ro yp:dscp?                inet:dscp
+      |  +--ro yp:weighting?           uint8
+      |  +--ro yp:dependency?          sn:subscription-id
+      +---n subscription-terminated
+      |  +--ro identifier        subscription-id
+      |  +--ro error-id          subscription-errors
+      |  +--ro filter-failure?   string
+      +---n subscription-suspended
+         +--ro identifier        subscription-id
+         +--ro error-id          subscription-errors
+         +--ro filter-failure?   string
+  module: ietf-yang-push
+
+    notifications:
+      +---n push-update
+      |  +--ro subscription-id       sn:subscription-id
+      |  +--ro time-of-update?       yang:date-and-time
+      |  +--ro updates-not-sent?     empty
+      |  +--ro datastore-contents?
+      +---n push-change-update {on-change}?
+         +--ro subscription-id      sn:subscription-id
+         +--ro time-of-update?      yang:date-and-time
+         +--ro updates-not-sent?    empty
+         +--ro datastore-changes?
+
+                        Figure 11: Model structure
+
+   The components of the model are described in the following
+   subsections.
+
 4.2.  Filters
 
    Container "filters" contains a list of configurable data filters,
    each specified in its own list element.  This allows users to
    configure filters separately from an actual subscription, which can
    then be referenced from a subscription.  This facilitates the reuse
+
+
+
+Clemm, et al.            Expires August 12, 2017               [Page 26]
+
+Internet-Draft                  YANG-Push                  February 2017
+
+
    of filter definitions, which can be important in case of complex
    filter conditions.
 
@@ -1450,17 +1504,19 @@ Internet-Draft                  YANG-Push                  February 2017
       information is detected.  On-change subscriptions have more
       complex semantics that is guided by its own set of parameters:
 
-
-
-Clemm, et al.            Expires August 12, 2017               [Page 26]
-
-Internet-Draft                  YANG-Push                  February 2017
-
-
       *  a "dampening-period" specifies the interval that must pass
          before a successive update for the subscription is sent.  The
          first time a change is detected, the update is sent
          immediately.  If a subsequent change is detected, another
+
+
+
+
+Clemm, et al.            Expires August 12, 2017               [Page 27]
+
+Internet-Draft                  YANG-Push                  February 2017
+
+
          update is only sent once the dampening period has passed for
          this subscription has passed.
 
@@ -1505,16 +1561,17 @@ Internet-Draft                  YANG-Push                  February 2017
 
    Still to be investigated is whether a publisher might also provide
    additional information about subscriptions, such as statistics about
+   the number of data updates that were sent.  However, such information
+   is currently outside the scope of this specification.
 
 
 
-Clemm, et al.            Expires August 12, 2017               [Page 27]
+
+
+Clemm, et al.            Expires August 12, 2017               [Page 28]
 
 Internet-Draft                  YANG-Push                  February 2017
 
-
-   the number of data updates that were sent.  However, such information
-   is currently outside the scope of this specification.
 
 4.4.2.  Update Notifications
 
@@ -1564,7 +1621,10 @@ Internet-Draft                  YANG-Push                  February 2017
 
 
 
-Clemm, et al.            Expires August 12, 2017               [Page 28]
+
+
+
+Clemm, et al.            Expires August 12, 2017               [Page 29]
 
 Internet-Draft                  YANG-Push                  February 2017
 
@@ -1592,7 +1652,7 @@ Internet-Draft                  YANG-Push                  February 2017
       </establish-subscription>
    </netconf:rpc>
 
-                   Figure 10: Establish-subscription RPC
+                   Figure 12: Establish-subscription RPC
 
    The publisher must respond explicitly positively (i.e., subscription
    accepted) or negatively (i.e., subscription rejected) to the request.
@@ -1611,7 +1671,7 @@ Internet-Draft                  YANG-Push                  February 2017
        </subscription-id>
    </rpc-reply>
 
-          Figure 11: Establish-subscription positive RPC response
+          Figure 13: Establish-subscription positive RPC response
 
    A subscription can be rejected for multiple reasons, including the
    lack of authorization to establish a subscription, the lack of read
@@ -1620,7 +1680,7 @@ Internet-Draft                  YANG-Push                  February 2017
 
 
 
-Clemm, et al.            Expires August 12, 2017               [Page 29]
+Clemm, et al.            Expires August 12, 2017               [Page 30]
 
 Internet-Draft                  YANG-Push                  February 2017
 
@@ -1639,7 +1699,7 @@ Internet-Draft                  YANG-Push                  February 2017
        </subscription-result>
    </rpc-reply>
 
-         Figure 12: Establish-subscription access denied response
+         Figure 14: Establish-subscription access denied response
 
    If a request is rejected because the publisher is not able to serve
    it, the publisher SHOULD include in the returned error what
@@ -1662,7 +1722,7 @@ Internet-Draft                  YANG-Push                  February 2017
       </establish-subscription>
    </netconf:rpc>
 
-            Figure 13: Establish-subscription request example 2
+            Figure 15: Establish-subscription request example 2
 
    A publisher that cannot serve on-change updates but periodic updates
    might return the following:
@@ -1676,7 +1736,7 @@ Internet-Draft                  YANG-Push                  February 2017
 
 
 
-Clemm, et al.            Expires August 12, 2017               [Page 30]
+Clemm, et al.            Expires August 12, 2017               [Page 31]
 
 Internet-Draft                  YANG-Push                  February 2017
 
@@ -1690,7 +1750,7 @@ Internet-Draft                  YANG-Push                  February 2017
        <period>100</period>
    </rpc-reply>
 
-        Figure 14: Establish-subscription error response example 2
+        Figure 16: Establish-subscription error response example 2
 
 4.5.2.  Modify-subscription RPC
 
@@ -1717,7 +1777,7 @@ Internet-Draft                  YANG-Push                  February 2017
       </modify-subscription>
    </netconf:rpc>
 
-                  Figure 15: Modify subscription request
+                  Figure 17: Modify subscription request
 
    The publisher must respond explicitly positively (i.e., subscription
    accepted) or negatively (i.e., subscription rejected) to the request.
@@ -1732,7 +1792,7 @@ Internet-Draft                  YANG-Push                  February 2017
 
 
 
-Clemm, et al.            Expires August 12, 2017               [Page 31]
+Clemm, et al.            Expires August 12, 2017               [Page 32]
 
 Internet-Draft                  YANG-Push                  February 2017
 
@@ -1749,7 +1809,7 @@ Internet-Draft                  YANG-Push                  February 2017
       </subscription-id>
    </rpc-reply>
 
-                  Figure 16: Modify subscription response
+                  Figure 18: Modify subscription response
 
    If the subscription modification is rejected, the publisher must send
    a response like it does for an establish-subscription and maintain
@@ -1788,7 +1848,7 @@ Internet-Draft                  YANG-Push                  February 2017
 
 
 
-Clemm, et al.            Expires August 12, 2017               [Page 32]
+Clemm, et al.            Expires August 12, 2017               [Page 33]
 
 Internet-Draft                  YANG-Push                  February 2017
 
@@ -1812,7 +1872,7 @@ Internet-Draft                  YANG-Push                  February 2017
    </rpc-reply>
 
 
-                      Figure 17: Delete subscription
+                      Figure 19: Delete subscription
 
    Configured subscriptions cannot be deleted via RPC, but have to be
    removed from the configuration.
@@ -1823,11 +1883,11 @@ Internet-Draft                  YANG-Push                  February 2017
    to know the YANG module library that is in use by server that is
    being replicated.  The YANG 1.0 module library information is sent by
    a NETCONF server in the NETCONF 'hello' message.  For YANG 1.1
-   modules and all modules used with the RESTCONF
-   [I-D.ietf-netconf-restconf] protocol, this information is provided by
-   the YANG Library module (ietf-yang-library.yang from [RFC7895].  The
-   YANG library information is important for the receiver to reproduce
-   the set of object definitions used by the replicated datastore.
+   modules and all modules used with the RESTCONF [RFC8040] protocol,
+   this information is provided by the YANG Library module (ietf-yang-
+   library.yang from [RFC7895].  The YANG library information is
+   important for the receiver to reproduce the set of object definitions
+   used by the replicated datastore.
 
    The YANG library includes a module list with the name, revision,
    enabled features, and applied deviations for each YANG YANG module
@@ -1844,7 +1904,7 @@ Internet-Draft                  YANG-Push                  February 2017
 
 
 
-Clemm, et al.            Expires August 12, 2017               [Page 33]
+Clemm, et al.            Expires August 12, 2017               [Page 34]
 
 Internet-Draft                  YANG-Push                  February 2017
 
@@ -1900,7 +1960,7 @@ module ietf-yang-push {
 
 
 
-Clemm, et al.            Expires August 12, 2017               [Page 34]
+Clemm, et al.            Expires August 12, 2017               [Page 35]
 
 Internet-Draft                  YANG-Push                  February 2017
 
@@ -1956,7 +2016,7 @@ Internet-Draft                  YANG-Push                  February 2017
 
 
 
-Clemm, et al.            Expires August 12, 2017               [Page 35]
+Clemm, et al.            Expires August 12, 2017               [Page 36]
 
 Internet-Draft                  YANG-Push                  February 2017
 
@@ -1978,6 +2038,12 @@ Internet-Draft                  YANG-Push                  February 2017
       "On-change synch-on-start not supported.";
   }
 
+  identity synch-on-start-datatree-size {
+    base sn:error;
+    description
+      "Synch-on-start would push a datatree which exceeds size limit.";
+  }
+
   identity reference-mismatch {
     base sn:error;
     description
@@ -1988,13 +2054,13 @@ Internet-Draft                  YANG-Push                  February 2017
     base sn:error;
     description
       "Referenced yang subtree doesn't exist, or is a node where read
-       access is not permitted .";
+       access is not permitted.";
   }
 
   identity datatree-size {
     base sn:error;
     description
-      "Resulting datatree exceeds size limit .";
+      "Resulting push updates would exceed size limit.";
   }
 
   /* Additional types of streams */
@@ -2003,20 +2069,20 @@ Internet-Draft                  YANG-Push                  February 2017
     description
       "A conceptual datastream consisting of all datastore updates,
        including operational and configuration data.";
+
+
+
+Clemm, et al.            Expires August 12, 2017               [Page 37]
+
+Internet-Draft                  YANG-Push                  February 2017
+
+
   }
 
   identity custom-stream {
     base sn:stream;
     description
       "A conceptual datastream for datastore updates with custom
-
-
-
-Clemm, et al.            Expires August 12, 2017               [Page 36]
-
-Internet-Draft                  YANG-Push                  February 2017
-
-
        updates as defined by a user.";
   }
 
@@ -2059,20 +2125,20 @@ Internet-Draft                  YANG-Push                  February 2017
   }
 
   grouping update-filter {
+
+
+
+Clemm, et al.            Expires August 12, 2017               [Page 38]
+
+Internet-Draft                  YANG-Push                  February 2017
+
+
     description
       "This groupings defines filters for push updates for a
        datastore tree.  The filters define which updates are of
        interest in a push update subscription.  Mixing and matching
        of multiple filters does not occur at the level of this
        grouping. When a push-update subscription is created, the
-
-
-
-Clemm, et al.            Expires August 12, 2017               [Page 37]
-
-Internet-Draft                  YANG-Push                  February 2017
-
-
        filter can be a regular subscription filter, or one of the
        additional filters that are defined in this grouping.";
     choice update-filter {
@@ -2115,20 +2181,20 @@ Internet-Draft                  YANG-Push                  February 2017
          the subscriber.";
       case periodic {
         description
+
+
+
+Clemm, et al.            Expires August 12, 2017               [Page 39]
+
+Internet-Draft                  YANG-Push                  February 2017
+
+
           "The agent is requested to notify periodically the current
            values of the datastore as defined by the filter.";
         leaf period {
           type yang:timeticks;
           mandatory true;
           description
-
-
-
-Clemm, et al.            Expires August 12, 2017               [Page 38]
-
-Internet-Draft                  YANG-Push                  February 2017
-
-
             "Duration of time which should occur between periodic
              push updates.  Where the anchor of a start-time is
              available, the push will include the objects and their
@@ -2171,20 +2237,20 @@ Internet-Draft                  YANG-Push                  February 2017
         description
           "Includes objects not modifiable once subscription is
            established.";
+
+
+
+Clemm, et al.            Expires August 12, 2017               [Page 40]
+
+Internet-Draft                  YANG-Push                  February 2017
+
+
         leaf no-synch-on-start {
           type empty;
           description
             "This leaf acts as a flag that determines behavior at the
              start of the subscription.  When present, synchronization
              of state at the beginning of the subscription is outside
-
-
-
-Clemm, et al.            Expires August 12, 2017               [Page 39]
-
-Internet-Draft                  YANG-Push                  February 2017
-
-
              the scope of the subscription. Only updates about changes
              that are observed from the start time, i.e. only push-
              change-update notifications are sent. When absent (default
@@ -2216,8 +2282,9 @@ Internet-Draft                  YANG-Push                  February 2017
       default "0";
       description
         "The push update's IP packet transport priority. This is made
-         visible across network hops to receiver. The transport priority
-         is shared for all receivers of a given subscription.";
+         visible across network hops to receiver. The transport
+         priority is shared for all receivers of a given
+         subscription.";
     }
     leaf weighting {
       type uint8 {
@@ -2226,6 +2293,14 @@ Internet-Draft                  YANG-Push                  February 2017
       description
         "Relative weighting for a subscription. Allows an underlying
          transport layer perform informed load balance allocations
+
+
+
+Clemm, et al.            Expires August 12, 2017               [Page 41]
+
+Internet-Draft                  YANG-Push                  February 2017
+
+
          between various subscriptions";
       reference
         "RFC-7540, section 5.3.2";
@@ -2233,14 +2308,6 @@ Internet-Draft                  YANG-Push                  February 2017
     leaf dependency {
       type sn:subscription-id;
       description
-
-
-
-Clemm, et al.            Expires August 12, 2017               [Page 40]
-
-Internet-Draft                  YANG-Push                  February 2017
-
-
         "Provides the Subscription ID of a parent subscription which has
          absolute priority should that parent have push updates ready to
          egress the publisher. In other words, there should be no
@@ -2271,32 +2338,32 @@ Internet-Draft                  YANG-Push                  February 2017
     leaf object-count-estimate {
       type uint32;
       description
-        "If there are too many objects which would be returned by the
-         filter, this identifies the estimate of the current number
-         which the filter would catch.";
+        "If there are too many objects which could potentially be
+         returned by the filter, this identifies the estimate of the
+         number of objects which the filter would potentially pass.";
     }
     leaf object-count-limit {
       type uint32;
       description
-        "If there are too many objects which would be returned by the
+        "If there are too many objects which could be returned by the
          filter, this identifies the upper limit of the publisher's
          ability to service for this subscription.";
     }
-    leaf kilobytes-estimate {
-      type uint32;
-      description
-        "If the returned information would be beyond the capacity of the
-         publisher, this would identify the data size which would result
-         from this filter.";
-    }
 
 
 
-Clemm, et al.            Expires August 12, 2017               [Page 41]
+Clemm, et al.            Expires August 12, 2017               [Page 42]
 
 Internet-Draft                  YANG-Push                  February 2017
 
 
+    leaf kilobytes-estimate {
+      type uint32;
+      description
+        "If the returned information could be beyond the capacity of the
+         publisher, this would identify the data size which could result
+         from this filter.";
+    }
     leaf kilobytes-limit {
       type uint32;
       description
@@ -2338,6 +2405,14 @@ Internet-Draft                  YANG-Push                  February 2017
   augment "/sn:modify-subscription/sn:input/"+
           "sn:filter-type" {
     description
+
+
+
+Clemm, et al.            Expires August 12, 2017               [Page 43]
+
+Internet-Draft                  YANG-Push                  February 2017
+
+
       "Add push filters to selection of filter types.";
     case update-filter {
       description
@@ -2345,14 +2420,6 @@ Internet-Draft                  YANG-Push                  February 2017
       uses update-filter;
     }
   }
-
-
-
-Clemm, et al.            Expires August 12, 2017               [Page 42]
-
-Internet-Draft                  YANG-Push                  February 2017
-
-
   augment "/sn:modify-subscription/sn:output/"+
     "sn:result/sn:no-success" {
     description
@@ -2394,6 +2461,14 @@ Internet-Draft                  YANG-Push                  February 2017
     anydata datastore-contents {
       description
         "This contains the updated data.  It constitutes a snapshot
+
+
+
+Clemm, et al.            Expires August 12, 2017               [Page 44]
+
+Internet-Draft                  YANG-Push                  February 2017
+
+
          at the time-of-update of the set of data that has been
          subscribed to.  The format and syntax of the data
          corresponds to the format and syntax of data that would be
@@ -2401,14 +2476,6 @@ Internet-Draft                  YANG-Push                  February 2017
          filter parameters applied.";
     }
   }
-
-
-
-Clemm, et al.            Expires August 12, 2017               [Page 43]
-
-Internet-Draft                  YANG-Push                  February 2017
-
-
   notification push-change-update {
     if-feature "on-change";
     description
@@ -2450,6 +2517,14 @@ Internet-Draft                  YANG-Push                  February 2017
          patch operation, i.e. a yang-patch operation applied to the
          YANG datastore implied by the previous update to result in the
          current state (and assuming yang-patch could also be applied to
+
+
+
+Clemm, et al.            Expires August 12, 2017               [Page 45]
+
+Internet-Draft                  YANG-Push                  February 2017
+
+
          operational data).";
     }
   }
@@ -2457,14 +2532,6 @@ Internet-Draft                  YANG-Push                  February 2017
     description
       "This augmentation adds push subscription parameters to the
        notification that a subscription has started and data updates are
-
-
-
-Clemm, et al.            Expires August 12, 2017               [Page 44]
-
-Internet-Draft                  YANG-Push                  February 2017
-
-
        beginning to be sent. This notification shall only be sent to
        receivers of a subscription; it does not constitute a general-
        purpose notification.";
@@ -2506,6 +2573,14 @@ Internet-Draft                  YANG-Push                  February 2017
           "sn:filter-type" {
     description
       "This container adds additional update filter options to the list
+
+
+
+Clemm, et al.            Expires August 12, 2017               [Page 46]
+
+Internet-Draft                  YANG-Push                  February 2017
+
+
        of configurable filters that can be applied to subscriptions.
        This facilitates the reuse of complex filters once defined.";
     case update-filter {
@@ -2513,14 +2588,6 @@ Internet-Draft                  YANG-Push                  February 2017
     }
   }
   augment "/sn:subscription-config/sn:subscription" {
-
-
-
-Clemm, et al.            Expires August 12, 2017               [Page 45]
-
-Internet-Draft                  YANG-Push                  February 2017
-
-
     description
       "Contains the list of subscriptions that are configured,
        as opposed to established via RPC or other means.";
@@ -2558,7 +2625,16 @@ Internet-Draft                  YANG-Push                  February 2017
     }
   }
 }
+
 <CODE ENDS>
+
+
+
+
+
+Clemm, et al.            Expires August 12, 2017               [Page 47]
+
+Internet-Draft                  YANG-Push                  February 2017
 
 
 6.  Security Considerations
@@ -2568,15 +2644,6 @@ Internet-Draft                  YANG-Push                  February 2017
    the ability to decline a subscription request if it would deplete its
    resources.  In addition, a publisher needs to be able to suspend an
    existing subscription when needed.  When this occur, the subscription
-
-
-
-
-Clemm, et al.            Expires August 12, 2017               [Page 46]
-
-Internet-Draft                  YANG-Push                  February 2017
-
-
    status is updated accordingly and the receivers are notified.
    Likewise, requests for subscriptions need to be properly authorized.
 
@@ -2612,46 +2679,48 @@ Internet-Draft                  YANG-Push                  February 2017
 
    [I-D.ietf-netconf-yang-patch]
               Bierman, A., Bjorklund, M., and K. Watsen, "YANG Patch
-              Media Type", draft-ietf-netconf-yang-patch-12 (work in
-              progress), September 2016.
-
-   [I-D:netconf-sub-notif]
-              Clemm, A., Gonzalez Prieto, A., Voit, E., Tripathy, A.,
-              Nilsen-Nygaard, E., Chisholm, S., and H. Trevino,
-              "Subscribing to YANG-Defined Event Notifications", draft-
-              ietf-netconf-5277bis-01 (work in progress), October 2016.
-
-   [RFC6470]  Bierman, A., "Network Configuration Protocol (NETCONF)
-              Base Notifications", RFC 6470, February 2012.
+              Media Type", draft-ietf-netconf-yang-patch-14 (work in
+              progress), November 2016.
 
 
 
 
 
-Clemm, et al.            Expires August 12, 2017               [Page 47]
+
+
+Clemm, et al.            Expires August 12, 2017               [Page 48]
 
 Internet-Draft                  YANG-Push                  February 2017
 
 
+   [I-D:netconf-sub-notif]
+              Clemm, A., Gonzalez Prieto, A., Voit, E., Tripathy, A.,
+              and E. Nilsen-Nygaard, "Subscribing to YANG-Defined Event
+              Notifications", draft-ietf-netconf-subscribed-
+              notifications-00 (work in progress), February 2017.
+
+   [RFC6470]  Bierman, A., "Network Configuration Protocol (NETCONF)
+              Base Notifications", RFC 6470, DOI 10.17487/RFC6470,
+              February 2012, <http://www.rfc-editor.org/info/rfc6470>.
+
    [RFC6536]  Bierman, A. and M. Bjorklund, "Network Configuration
-              Protocol (NETCONF) Access Control Model", RFC 6536, March
-              2012.
+              Protocol (NETCONF) Access Control Model", RFC 6536,
+              DOI 10.17487/RFC6536, March 2012,
+              <http://www.rfc-editor.org/info/rfc6536>.
 
    [RFC7895]  Bierman, A., Bjorklund, M., and K. Watsen, "YANG Module
-              Library", RFC 7895, June 2016.
+              Library", RFC 7895, DOI 10.17487/RFC7895, June 2016,
+              <http://www.rfc-editor.org/info/rfc7895>.
 
-   [RFC7950]  Bjorklund, M., "The YANG 1.1 Data Modeling Language",
-              RFC 7950, August 2016.
+   [RFC7950]  Bjorklund, M., Ed., "The YANG 1.1 Data Modeling Language",
+              RFC 7950, DOI 10.17487/RFC7950, August 2016,
+              <http://www.rfc-editor.org/info/rfc7950>.
 
    [RFC7951]  Lhotka, L., "JSON Encoding of Data Modeled with YANG",
-              RFC 7951, August 2016.
+              RFC 7951, DOI 10.17487/RFC7951, August 2016,
+              <http://www.rfc-editor.org/info/rfc7951>.
 
 8.2.  Informative References
-
-   [I-D.ietf-netconf-restconf]
-              Bierman, A., Bjorklund, M., and K. Watsen, "RESTCONF
-              Protocol", I-D draft-ietf-netconf-restconf-17, September
-              2016.
 
    [RFC1157]  Case, J., "A Simple Network Management Protocol (SNMP)",
               RFC 1157, May 1990.
@@ -2666,6 +2735,20 @@ Internet-Draft                  YANG-Push                  February 2017
    [RFC7923]  Voit, E., Clemm, A., and A. Gonzalez Prieto, "Requirements
               for Subscription to YANG Datastores", RFC 7923, June 2016.
 
+   [RFC8040]  Bierman, A., Bjorklund, M., and K. Watsen, "RESTCONF
+              Protocol", RFC 8040, DOI 10.17487/RFC8040, January 2017,
+              <http://www.rfc-editor.org/info/rfc8040>.
+
+
+
+
+
+
+Clemm, et al.            Expires August 12, 2017               [Page 49]
+
+Internet-Draft                  YANG-Push                  February 2017
+
+
 Appendix A.  Technologies to be considered for future iterations
 
 A.1.  Proxy YANG Subscription when the Subscriber and Receiver are
@@ -2679,15 +2762,6 @@ A.1.  Proxy YANG Subscription when the Subscriber and Receiver are
    o  An operator does not want the subscription to be dependent on the
       maintenance of transport level keep-alives.  (Transport
       independence provides different scalability characteristics.)
-
-
-
-
-
-Clemm, et al.            Expires August 12, 2017               [Page 48]
-
-Internet-Draft                  YANG-Push                  February 2017
-
 
    o  There is not a transport session binding, and a transient
       Subscription needs to survive in an environment where there is
@@ -2723,6 +2797,14 @@ A.2.  OpState and Filters
 
    Defining any such subscription filters at this point would be highly
    speculative in nature.  However, it should be noted that
+
+
+
+Clemm, et al.            Expires August 12, 2017               [Page 50]
+
+Internet-Draft                  YANG-Push                  February 2017
+
+
    corresponding extensions may be defined in future specifications.
    Any such extensions will be straightforward to accommodate by
    introducing a model that defines new filter types, and augmenting the
@@ -2736,15 +2818,6 @@ A.3.  Splitting push updates
    updates into multiple separate update messages.  Such splitting could
    occur along multiple criteria: limiting the number of data nodes
    contained in a single update, grouping updates by subtree, grouping
-
-
-
-
-Clemm, et al.            Expires August 12, 2017               [Page 49]
-
-Internet-Draft                  YANG-Push                  February 2017
-
-
    updates by internal subsystems (e.g., by line card), or grouping them
    by other criteria.
 
@@ -2779,6 +2852,15 @@ A.4.  Potential Subscription Parameters
    in sending at the end of each period an update containing only
    changes since the last update (i.e. a change-update as in the case of
    an on-change subscription), not a full snapshot of the subscribed
+
+
+
+
+Clemm, et al.            Expires August 12, 2017               [Page 51]
+
+Internet-Draft                  YANG-Push                  February 2017
+
+
    information.  Such an option might be interesting in case of data
    that is largely static and bandwidth-constrained environments.
 
@@ -2786,36 +2868,7 @@ Appendix B.  Issues that are currently being worked and resolved
 
    (To be removed by RFC editor prior to publication)
 
-B.1.  Unresolved and yet-to-be addressed issues
-
-   Mechanism for getting operational data indicating the result of
-   filters.  I.e., how much data did the filters catch during a time
-   period.  Getting to a granularity of each 'catch' will be difficult.
-   Might be good just to count pass/drop for a subscription.
-
-
-
-
-Clemm, et al.            Expires August 12, 2017               [Page 50]
-
-Internet-Draft                  YANG-Push                  February 2017
-
-
-   Error type scrub
-
-   We need a new Metadata filter.  But so does traditional GET.  This
-   should be relevant independent of subscriptions.  This has
-   implications of ephemeral requirements from I2RS
-
-   Should we allow an interplay of filter types in a single
-   subscription.  Or should we keep them fully independent.
-
-   Do we add a counter for the number of object changes during a
-   dampening period?
-
-B.2.  Agreement in principal
-
-   tbd
+   Issue #6: Data plane notifications and layered headers
 
 Appendix C.  Changes between revisions
 
@@ -2823,15 +2876,20 @@ Appendix C.  Changes between revisions
 
    v04 to v05
 
-   o
+   o  Referenced based subscription document changed to Subscribed
+      Notifications from 5277bis.
+
+   o  Getting operational data from filters
+
+   o  Extension notifiable-on-change added
 
    o  New appendix on potential futures.  Moved text into there from
       several drafts.
 
    o  Subscription configuration section now just includes changed
-      parameters from 5277bis
+      parameters from Subscribed Notifications
 
-   o  Subscription monitoring moved into 5277bis
+   o  Subscription monitoring moved into Subscribed Notifications
 
    o  New error and hint mechanisms included in text and in the yang
       model.
@@ -2850,14 +2908,14 @@ Appendix C.  Changes between revisions
 
    o  Moved start/stop into rfc5277bis
 
+   o  Client and Server changed to subscriber, publisher, and receiver
 
 
-Clemm, et al.            Expires August 12, 2017               [Page 51]
+
+Clemm, et al.            Expires August 12, 2017               [Page 52]
 
 Internet-Draft                  YANG-Push                  February 2017
 
-
-   o  Client and Server changed to subscriber, publisher, and receiver
 
    o  Anchor time for periodic
 
@@ -2908,7 +2966,9 @@ Authors' Addresses
 
 
 
-Clemm, et al.            Expires August 12, 2017               [Page 52]
+
+
+Clemm, et al.            Expires August 12, 2017               [Page 53]
 
 Internet-Draft                  YANG-Push                  February 2017
 
@@ -2963,5 +3023,3 @@ Internet-Draft                  YANG-Push                  February 2017
 
 
 
-
-Clemm, et al.            Expires August 12, 2017               [Page 53]
