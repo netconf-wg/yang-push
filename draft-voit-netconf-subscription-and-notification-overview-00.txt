@@ -1,0 +1,446 @@
+NETCONF                                                          E. Voit
+Internet-Draft                                             Cisco Systems
+Intended status: Informational                                  A. Clemm
+Expires: March 15, 2018                                           Huawei
+                                                      September 11, 2017
+
+
+                Subscription and Notifications Overview
+      draft-voit-netconf-subscription-and-notification-overview-00
+
+Abstract
+
+   Provides an introductory context for NETCONF WG drafts on
+   subscriptions and notifications.  Through this document, a reader can
+   understand the scope of each draft, as well as the relationships
+   between each draft.
+
+Status of This Memo
+
+   This Internet-Draft is submitted in full conformance with the
+   provisions of BCP 78 and BCP 79.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF).  Note that other groups may also distribute
+   working documents as Internet-Drafts.  The list of current Internet-
+   Drafts is at https://datatracker.ietf.org/drafts/current/.
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+   This Internet-Draft will expire on March 15, 2018.
+
+Copyright Notice
+
+   Copyright (c) 2017 IETF Trust and the persons identified as the
+   document authors.  All rights reserved.
+
+   This document is subject to BCP 78 and the IETF Trust's Legal
+   Provisions Relating to IETF Documents
+   (https://trustee.ietf.org/license-info) in effect on the date of
+   publication of this document.  Please review these documents
+   carefully, as they describe your rights and restrictions with respect
+   to this document.  Code Components extracted from this document must
+   include Simplified BSD License text as described in Section 4.e of
+   the Trust Legal Provisions and are provided without warranty as
+   described in the Simplified BSD License.
+
+
+
+Voit & Clemm             Expires March 15, 2018                 [Page 1]
+
+Internet-Draft                    SANO                    September 2017
+
+
+Table of Contents
+
+   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   2
+     1.1.  Phasing of drafts . . . . . . . . . . . . . . . . . . . .   2
+     1.2.  Terminology . . . . . . . . . . . . . . . . . . . . . . .   3
+   2.  Scope of Drafts . . . . . . . . . . . . . . . . . . . . . . .   3
+     2.1.  draft-ietf-netconf-subscribed-notifications . . . . . . .   3
+     2.2.  draft-ietf-netconf-yang-push  . . . . . . . . . . . . . .   4
+     2.3.  draft-ietf-netconf-netconf-event-notifications  . . . . .   4
+     2.4.  draft-ietf-netconf-restconf-notif . . . . . . . . . . . .   4
+     2.5.  draft-ietf-netconf-yang-notification-messages . . . . . .   4
+   3.  Relationships between Drafts  . . . . . . . . . . . . . . . .   5
+   4.  Security Considerations . . . . . . . . . . . . . . . . . . .   6
+   5.  Informative References  . . . . . . . . . . . . . . . . . . .   7
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .   7
+
+1.  Introduction
+
+   This document provides an overview for the following documents:
+
+   o  draft-ietf-netconf-subscribed-notifications
+   o  draft-ietf-netconf-yang-push
+   o  draft-ietf-netconf-netconf-event-notifications
+   o  draft-ietf-netconf-restconf-notif
+   o  draft-ietf-netconf-yang-notification-messages
+
+1.1.  Phasing of drafts
+
+   This set of drivers has two themes:
+
+   1.  an evolved subscription configuration data model and state
+       transition messages, which when paired with the existing RFC-5277
+       encoded one way operation provides a solution for yang push.
+   2.  a new one-way notification operation that can provide robustness,
+       flexibility, and extensibility.
+
+   For theme 1, drafts [subscribed-notifications], [yang-push],
+   [netconf-event-notifications], and [restconf-notif] provide solutions
+   for an evolved subscription data model, pushing of YANG datastore
+   changes as they happen, and periodic reporting of YANG datastore
+   state.  Also enabled is the use of the evolved subscription model and
+   subscription state transition messages on publisher based event
+   streams.
+
+   For theme 2, solutions are in the early stages for:
+
+
+
+
+
+
+Voit & Clemm             Expires March 15, 2018                 [Page 2]
+
+Internet-Draft                    SANO                    September 2017
+
+
+   o  automatic determination of which common headers to use, and
+      selection of if/what transport bundling to use without requiring
+      any change to YANG's 'notification' statement
+   o  continuing, transparent support for [RFC5277] encoded
+      notifications from legacy clients
+   o  general strategy to introduce new behavior where a server
+      advertises support for new headers and encodings, and client
+      selects them when available
+
+   These items are listed so they are explicitly shown not be covered by
+   Theme 1.
+
+1.2.  Terminology
+
+   The terms publisher, receiver, and subscriber are defined in
+   [subscribed-notifications].
+
+2.  Scope of Drafts
+
+   This section describes the intent and contents of each draft.
+
+2.1.  draft-ietf-netconf-subscribed-notifications
+
+   This document defines the YANG module, RPCs, and Notifications for
+   the customized establishment of subscriptions upon a publisher's
+   event streams.  Also defined are delivery mechanisms for instances of
+   the resulting events.  Effectively this allows a subscriber to
+   request and receive a continuous, custom influx of publisher
+   generated information.  Included are:
+
+   o  Dynamic and configured subscriptions
+   o  Multiple subscriptions / transport
+   o  Multiple configured receivers
+   o  Establish, modify, delete, kill RPC
+   o  State change notifications
+   o  Suspend/resume
+   o  Filtering full notifications
+   o  Stream discovery
+   o  Replay (and start time negotiation)
+   o  Prioritization
+   o  Monitoring / reporting
+   o  QoS
+   o  Error responses
+
+
+
+
+
+
+
+
+Voit & Clemm             Expires March 15, 2018                 [Page 3]
+
+Internet-Draft                    SANO                    September 2017
+
+
+2.2.  draft-ietf-netconf-yang-push
+
+   This document extends the YANG module, RPCs, and Notifications from
+   [subscribed-notifications] to enable the customized establishment of
+   subscriptions upon YANG datastores.  Via this document, a subscriber
+   application may request a continuous, customized stream of updates
+   from a YANG datastore.  Included are:
+
+   o  Datastore on-change and periodic triggers
+   o  Selecting objects within a datastore
+   o  Authorization model per object
+   o  RPC for datastore resynchronization
+   o  Sending of full YANG trees or yang-patch
+   o  Tagging of partial updates
+   o  Tagging of on-change object support
+   o  Negotiation of filters and period lengths
+   o  Datastore specific error responses
+
+2.3.  draft-ietf-netconf-netconf-event-notifications
+
+   This document provides a NETCONF binding for
+   [subscribed-notifications].  Included are:
+
+   o  Transport mappings for subscription RPCs and state change
+      notifications
+   o  Transport mapping for RFC-5277 event transport
+
+2.4.  draft-ietf-netconf-restconf-notif
+
+   This document provides RESTCONF, HTTP2, and HTTP1.1 bindings for the
+   subscribed-notifications.  Included are:
+
+   o  Transport mapping for subscription protocol messages
+   o  Transport mappings for RFC-5277 one-way operation
+   o  Heartbeats and clean-up
+
+2.5.  draft-ietf-netconf-yang-notification-messages
+
+   This document defines a new notification message format, using yang-
+   data.  Included are:
+
+   o  a new notification mechanism to replace the one way operation of
+      RFC-5277
+   o  a set of common, transport agnostic message header objects to
+      support functionality such as event severity, message signing,
+      message loss discovery, message de-duplication, originating
+      process identification.
+
+
+
+
+Voit & Clemm             Expires March 15, 2018                 [Page 4]
+
+Internet-Draft                    SANO                    September 2017
+
+
+   o  how to bundle multiple event records into a single notification
+      message.
+   o  how to ensure these new capabilities are only used with capable
+      receivers.
+
+   This mechanism could have future applicability for updates to
+   [RFC7950] and [RFC8040].
+
+3.  Relationships between Drafts
+
+   This section describes the relationships between subscription drafts.
+
+
+                      RFC-5277      yang-push
+                          |             |
+                       (1)|             |(2)
+                          v             v
+                     subscribed-notifications
+                          ^             ^
+                       (3)|             |(4)
+                          |             |
+                restconf-notif   netconf-event-notifications
+                          |             |
+                       (5)|             |(6)
+                          v             v
+                     yang-notification-messages
+
+
+                  Figure 1: Relationships between drafts
+
+   A few notes on the figure above.  The initial of text leading text of
+   each name has been removed to make the figure more readable.
+   Numbered arrows indicate a relationship of one draft with another.
+   The nature of each arrow is described below.
+
+   Relationship (1)  Until [yang-notification-messages] becomes
+                     available, draft [subscribed-notifications] needs
+                     RFC-5277's mechanism for encoding one way
+                     notifications.
+
+   Relationship (2)  The draft [subscribed-notifications] provides the
+                     technical foundation upon which YANG datastore
+                     specific push mechanisms are layered as specified
+                     in [yang-push].  Key here are:
+
+                     *  replacement of event streams with on-change or
+                        periodic triggers upon a YANG Datastore.
+
+
+
+
+Voit & Clemm             Expires March 15, 2018                 [Page 5]
+
+Internet-Draft                    SANO                    September 2017
+
+
+                     *  replacement of event filters with datastore
+                        selectors
+
+   Relationship (3)  The [restconf-notif] draft supports
+                     [subscribed-notifications] by defining transport
+                     specific guidance where some form of HTTP is used
+                     underneath.  Key here are:
+
+                     *  bindings for RPC communications over RESTCONF
+                     *  bindings for one-way notifications transported
+                        over HTTP2 and HTTP1.1
+                     *  end-to-end deployment guidance for Call Home and
+                        TLS Heartbeat
+
+   Relationship (4)  The [netconf-event-notifications] draft supports
+                     [subscribed-notifications] by defining NETCONF
+                     transport specifics.  Key are:
+
+                     *  bindings for RPC communications over NETCONF
+                     *  bindings for one-way notifications transported
+                        over NETCONF
+
+   Relationship (5)  The [netconf-event-notifications] draft will not
+                     initially have available to it the replacement of
+                     RFC-5277 one way operation.  When
+                     [yang-notification-messages] becomes available, it
+                     will be possible to replace the RFC-5277 one-way
+                     operation with a solution which includes common
+                     headers and the ability to bundle many
+                     notifications into a single transportable message.
+
+   Relationship (6)  The [restconf-notif] draft will not initially have
+                     available to it the replacement of RFC-5277 one way
+                     operation.  When [yang-notification-messages]
+                     becomes available, it will be possible to replace
+                     the RFC-5277 one-way operation with a solution
+                     which includes common headers and the ability to
+                     bundle many notifications into a single
+                     transportable message.
+
+4.  Security Considerations
+
+   Not applicable.
+
+
+
+
+
+
+
+
+Voit & Clemm             Expires March 15, 2018                 [Page 6]
+
+Internet-Draft                    SANO                    September 2017
+
+
+5.  Informative References
+
+   [netconf-event-notifications]
+              Gonzalez Prieto, A., Clemm, A., Voit, E., Nilsen-Nygaard,
+              E., and A. Tripathy, "NETCONF Support for Event
+              Notifications", July 2017.
+
+   [restconf-notif]
+              Voit, E., Gonzalez Prieto, A., Tripathy, A., Nilsen-
+              Nygaard, E., Clemm, A., and A. Bierman, "RESTCONF and HTTP
+              Transport for Event Notifications", August 2017.
+
+   [RFC5277]  Chisholm, S. and H. Trevino, "NETCONF Event
+              Notifications", RFC 5277, DOI 10.17487/RFC5277, July 2008,
+              <https://www.rfc-editor.org/info/rfc5277>.
+
+   [RFC7950]  Bjorklund, M., Ed., "The YANG 1.1 Data Modeling Language",
+              RFC 7950, DOI 10.17487/RFC7950, August 2016,
+             <https://www.rfc-editor.org/info/rfc7950>.
+
+   [RFC8040]  Bierman, A., Bjorklund, M., and K. Watsen, "RESTCONF
+              Protocol", RFC 8040, DOI 10.17487/RFC8040, January 2017,
+              <https://www.rfc-editor.org/info/rfc8040>.
+
+   [subscribed-notifications]
+              Voit, E., Clemm, A., Gonzalez Prieto, A., Prasad Tripathy,
+              A., and E. Nilsen-Nygaard, "Custom Subscription to Event
+              Notifications", September 2017,
+              <https://datatracker.ietf.org/doc/
+              draft-ietf-netconf-subscribed-notifications/>.
+
+   [yang-notification-messages]
+              Voit, E., Bierman, A., Clemm, A., and T. Jenkins, "YANG
+              Notification Headers and Bundles", July 2017.
+
+   [yang-push]
+              Clemm, A., Voit, E., Gonzalez Prieto, A., Prasad Tripathy,
+              A., Nilsen-Nygaard, E., Bierman, A., and B. Lengyel,
+              "Subscribing to YANG datastore push updates", September
+              2017, <https://datatracker.ietf.org/doc/
+              draft-ietf-netconf-yang-push/>.
+
+Authors' Addresses
+
+   Eric Voit
+   Cisco Systems
+
+   Email: evoit@cisco.com
+
+
+
+Voit & Clemm             Expires March 15, 2018                 [Page 7]
+
+Internet-Draft                    SANO                    September 2017
+
+
+   Alexander Clemm
+   Huawei
+
+   Email: ludwig@clemm.org
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Voit & Clemm             Expires March 15, 2018                 [Page 8]
+
+
