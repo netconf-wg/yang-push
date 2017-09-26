@@ -12,9 +12,6 @@ module ietf-yang-push {
   import ietf-subscribed-notifications {
     prefix sn;
   }
-  import ietf-netconf {
-    prefix nc;
-  }
   import ietf-datastores {
     prefix ds;
   } 
