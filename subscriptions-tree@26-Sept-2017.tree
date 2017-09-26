@@ -13,14 +13,14 @@ module: ietf-subscribed-notifications
     |  |     +--:(subtree-filter)
     |  |     |  +--rw subtree-filter?
     |  |     +--:(xpath-filter)
-    |  |        +--rw xpath-filter?     yang:xpath1.0 {nc:xpath}?
+    |  |        +--rw xpath-filter?     yang:xpath1.0 
     |  +--rw yp:selection-filter* [identifier]
     |     +--rw yp:identifier        sn:filter-id
     |     +--rw (yp:filter-spec)?
     |        +--:(yp:subtree-filter)
     |        |  +--rw yp:subtree-filter?
     |        +--:(yp:xpath-filter)
-    |           +--rw yp:xpath-filter?     yang:xpath1.0 {nc:xpath}?
+    |           +--rw yp:xpath-filter?     yang:xpath1.0 
     +--rw subscription-config {configured-subscriptions}?
     |  +--rw subscription* [identifier]
     |     +--rw identifier                 subscription-id
@@ -35,7 +35,7 @@ module: ietf-subscribed-notifications
     |     |  |  |        +--:(subtree-filter)
     |     |  |  |        |  +--rw subtree-filter?
     |     |  |  |        +--:(xpath-filter)
-    |     |  |  |           +--rw xpath-filter yang:xpath1.0 {nc:xpath}?
+    |     |  |  |           +--rw xpath-filter yang:xpath1.0 
     |     |  |  +--rw stream                     stream
     |     |  |  +--rw replay-start-time?    yang:date-and-time {replay}?
     |     |  +--:(yp:datastore)
@@ -49,7 +49,7 @@ module: ietf-subscribed-notifications
     |     |              |  +--rw yp:subtree-filter?
     |     |              +--:(yp:xpath-filter)
     |     |                 +--rw yp:xpath-filter?  
-    |     |                                yang:xpath1.0 {nc:xpath}?
+    |     |                                yang:xpath1.0 
     |     +--rw stop-time?                 yang:date-and-time
     |     +--rw receivers
     |     |  +--rw receiver* [address port]
@@ -90,7 +90,7 @@ module: ietf-subscribed-notifications
           |  |  |        |  +--ro subtree-filter?
           |  |  |        +--:(xpath-filter)
           |  |  |           +--ro xpath-filter?
-          |  |  |                              yang:xpath1.0 {nc:xpath}?
+          |  |  |                              yang:xpath1.0 
           |  |  +--ro stream                     stream
           |  |  +--ro replay-start-time?    yang:date-and-time {replay}?
           |  +--:(yp:datastore)
@@ -104,7 +104,7 @@ module: ietf-subscribed-notifications
           |              |  +--ro yp:subtree-filter?
           |              +--:(yp:xpath-filter)
           |                 +--ro yp:xpath-filter?           
-          |                                yang:xpath1.0 {nc:xpath}?
+          |                                yang:xpath1.0 
           +--ro stop-time?                 yang:date-and-time
           +--ro (notification-origin)?
           |  +--:(interface-originated)
@@ -147,7 +147,7 @@ module: ietf-subscribed-notifications
     |  |  |  |  |        |  +---w subtree-filter?
     |  |  |  |  |        +--:(xpath-filter)
     |  |  |  |  |           +---w xpath-filter?              
-    |  |  |  |  |                              yang:xpath1.0 {nc:xpath}?
+    |  |  |  |  |                              yang:xpath1.0 
     |  |  |  |  +---w stream                     stream
     |  |  |  |  +---w replay-start-time?    yang:date-and-time {replay}?
     |  |  |  +--:(yp:datastore)
@@ -161,7 +161,7 @@ module: ietf-subscribed-notifications
     |  |  |              |  +---w yp:subtree-filter?
     |  |  |              +--:(yp:xpath-filter)
     |  |  |                 +---w yp:xpath-filter? 
-    |  |  |                                  yang:xpath1.0 {nc:xpath}?
+    |  |  |                                  yang:xpath1.0 
     |  |  +---w stop-time?                 yang:date-and-time
     |  |  +---w (yp:update-trigger)?
     |  |  |  +--:(yp:periodic)
@@ -202,7 +202,7 @@ module: ietf-subscribed-notifications
     |  |  |              |  +---w subtree-filter?
     |  |  |              +--:(xpath-filter)
     |  |  |                 +---w xpath-filter?          
-    |  |  |                                    yang:xpath1.0 {nc:xpath}?
+    |  |  |                                    yang:xpath1.0 
     |  |  +---w stop-time?             yang:date-and-time
     |  |  +---w (yp:update-trigger)?
     |  |     +--:(yp:periodic)
@@ -251,7 +251,7 @@ module: ietf-subscribed-notifications
     |  |  |  |        |  +--ro subtree-filter?
     |  |  |  |        +--:(xpath-filter)
     |  |  |  |           +--ro xpath-filter?              
-    |  |  |  |                              yang:xpath1.0 {nc:xpath}?
+    |  |  |  |                              yang:xpath1.0 
     |  |  |  +--ro stream                   stream
     |  |  |  +--ro replay-start-time?       yang:date-and-time {replay}?
     |  |  +--:(yp:datastore)
@@ -265,7 +265,7 @@ module: ietf-subscribed-notifications
     |  |              |  +--ro yp:subtree-filter?
     |  |              +--:(yp:xpath-filter)
     |  |                 +--ro yp:xpath-filter?           
-    |  |                                       yang:xpath1.0 {nc:xpath}?
+    |  |                                       yang:xpath1.0 
     |  +--ro stop-time?                 yang:date-and-time
     |  +--ro (yp:update-trigger)?
     |  |  +--:(yp:periodic)
@@ -293,7 +293,7 @@ module: ietf-subscribed-notifications
     |  |  |  |        +--:(subtree-filter)
     |  |  |  |        |  +--ro subtree-filter?
     |  |  |  |        +--:(xpath-filter)
-    |  |  |  |           +--ro xpath-filter?   yang:xpath1.0 {nc:xpath}?
+    |  |  |  |           +--ro xpath-filter?   yang:xpath1.0 
     |  |  |  +--ro stream                     stream
     |  |  |  +--ro replay-start-time?       yang:date-and-time {replay}?
     |  |  +--:(yp:datastore)
@@ -307,7 +307,7 @@ module: ietf-subscribed-notifications
     |  |              |  +--ro yp:subtree-filter?
     |  |              +--:(yp:xpath-filter)
     |  |                 +--ro yp:xpath-filter? 
-    |  |                                       yang:xpath1.0 {nc:xpath}?
+    |  |                                       yang:xpath1.0 
     |  +--ro stop-time?                 yang:date-and-time
     |  +--ro (yp:update-trigger)?
     |  |  +--:(yp:periodic)
