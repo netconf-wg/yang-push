@@ -1,0 +1,350 @@
+module: ietf-subscribed-notifications
+    +--ro streams
+    |  +--ro stream* [stream]
+    |     +--ro stream                      stream
+    |     +--ro description                 string
+    |     +--ro replay-support?             empty
+    |     +--ro replay-log-creation-time?   yang:date-and-time
+    |     +--ro replay-log-aged-time?       yang:date-and-time
+    +--rw filters
+    |  +--rw event-filter* [identifier]
+    |  |  +--rw identifier        filter-id
+    |  |  +--rw (filter-spec)?
+    |  |     +--:(subtree-filter)
+    |  |     |  +--rw subtree-filter?
+    |  |     +--:(xpath-filter)
+    |  |        +--rw xpath-filter?     yang:xpath1.0 {nc:xpath}?
+    |  +--rw yp:selection-filter* [identifier]
+    |     +--rw yp:identifier        sn:filter-id
+    |     +--rw (yp:filter-spec)?
+    |        +--:(yp:subtree-filter)
+    |        |  +--rw yp:subtree-filter?
+    |        +--:(yp:xpath-filter)
+    |           +--rw yp:xpath-filter?     yang:xpath1.0 {nc:xpath}?
+    +--rw subscription-config {configured-subscriptions}?
+    |  +--rw subscription* [identifier]
+    |     +--rw identifier                 subscription-id
+    |     +--rw encoding?                  encoding
+    |     +--rw (target)
+    |     |  +--:(stream)
+    |     |  |  +--rw (event-filter)?
+    |     |  |  |  +--:(by-reference)
+    |     |  |  |  |  +--rw event-filter-ref           event-filter-ref
+    |     |  |  |  +--:(within-subscription)
+    |     |  |  |     +--rw (filter-spec)?
+    |     |  |  |        +--:(subtree-filter)
+    |     |  |  |        |  +--rw subtree-filter?
+    |     |  |  |        +--:(xpath-filter)
+    |     |  |  |           +--rw xpath-filter yang:xpath1.0 {nc:xpath}?
+    |     |  |  +--rw stream                     stream
+    |     |  |  +--rw replay-start-time?    yang:date-and-time {replay}?
+    |     |  +--:(yp:datastore)
+    |     |     +--rw yp:source                  ds:datastore
+    |     |     +--rw (yp:selected-content)?
+    |     |        +--:(yp:by-reference)
+    |     |        |  +--rw yp:selection-filter-ref selection-filter-ref
+    |     |        +--:(yp:within-subscription)
+    |     |           +--rw (yp:filter-spec)?
+    |     |              +--:(yp:subtree-filter)
+    |     |              |  +--rw yp:subtree-filter?
+    |     |              +--:(yp:xpath-filter)
+    |     |                 +--rw yp:xpath-filter?  
+    |     |                                yang:xpath1.0 {nc:xpath}?
+    |     +--rw stop-time?                 yang:date-and-time
+    |     +--rw receivers
+    |     |  +--rw receiver* [address port]
+    |     |     +--rw address     inet:host
+    |     |     +--rw port        inet:port-number
+    |     |     +--rw protocol?   transport-protocol
+    |     +--rw (notification-origin)?
+    |     |  +--:(interface-originated)
+    |     |  |  +--rw source-interface?          if:interface-ref
+    |     |  +--:(address-originated)
+    |     |     +--rw source-vrf?                string
+    |     |     +--rw source-address?            inet:ip-address-no-zone
+    |     +--rw (yp:update-trigger)?
+    |     |  +--:(yp:periodic)
+    |     |  |  +--rw yp:period                  yang:timeticks
+    |     |  |  +--rw yp:anchor-time?            yang:date-and-time
+    |     |  +--:(yp:on-change) {on-change}?
+    |     |     +--rw yp:dampening-period        yang:timeticks
+    |     |     +--rw yp:no-synch-on-start?      empty
+    |     |     +--rw yp:excluded-change*        change-type
+    |     +--rw yp:dscp?                   inet:dscp
+    |     +--rw yp:weighting?              uint8
+    |     +--rw yp:dependency?             sn:subscription-id
+    +--ro subscriptions
+       +--ro subscription* [identifier]
+          +--ro identifier                 subscription-id
+          +--ro configured-subscription?   
+          |                            empty {configured-subscriptions}?
+          +--ro encoding?                  encoding
+          +--ro (target)
+          |  +--:(stream)
+          |  |  +--ro (event-filter)?
+          |  |  |  +--:(by-reference)
+          |  |  |  |  +--ro event-filter-ref           event-filter-ref
+          |  |  |  +--:(within-subscription)
+          |  |  |     +--ro (filter-spec)?
+          |  |  |        +--:(subtree-filter)
+          |  |  |        |  +--ro subtree-filter?
+          |  |  |        +--:(xpath-filter)
+          |  |  |           +--ro xpath-filter?
+          |  |  |                              yang:xpath1.0 {nc:xpath}?
+          |  |  +--ro stream                     stream
+          |  |  +--ro replay-start-time?    yang:date-and-time {replay}?
+          |  +--:(yp:datastore)
+          |     +--ro yp:source                  ds:datastore
+          |     +--ro (yp:selected-content)?
+          |        +--:(yp:by-reference)
+          |        |  +--ro yp:selection-filter-ref selection-filter-ref
+          |        +--:(yp:within-subscription)
+          |           +--ro (yp:filter-spec)?
+          |              +--:(yp:subtree-filter)
+          |              |  +--ro yp:subtree-filter?
+          |              +--:(yp:xpath-filter)
+          |                 +--ro yp:xpath-filter?           
+          |                                yang:xpath1.0 {nc:xpath}?
+          +--ro stop-time?                 yang:date-and-time
+          +--ro (notification-origin)?
+          |  +--:(interface-originated)
+          |  |  +--ro source-interface?          if:interface-ref
+          |  +--:(address-originated)
+          |     +--ro source-vrf?                string
+          |     +--ro source-address?            inet:ip-address-no-zone
+          +--ro receivers
+          |  +--ro receiver* [address port]
+          |     +--ro address                   inet:host
+          |     +--ro port                      inet:port-number
+          |     +--ro protocol?                 transport-protocol
+          |     +--ro pushed-notifications?     yang:counter64
+          |     +--ro excluded-notifications?   yang:counter64
+          |     +--ro status                    subscription-status
+          +--ro (yp:update-trigger)?
+          |  +--:(yp:periodic)
+          |  |  +--ro yp:period                  yang:timeticks
+          |  |  +--ro yp:anchor-time?            yang:date-and-time
+          |  +--:(yp:on-change) {on-change}?
+          |     +--ro yp:dampening-period        yang:timeticks
+          |     +--ro yp:no-synch-on-start?      empty
+          |     +--ro yp:excluded-change*        change-type
+          +--ro yp:dscp?                   inet:dscp
+          +--ro yp:weighting?              uint8
+          +--ro yp:dependency?             sn:subscription-id
+
+  rpcs:
+    +---x establish-subscription
+    |  +---w input
+    |  |  +---w encoding?                  encoding
+    |  |  +---w (target)
+    |  |  |  +--:(stream)
+    |  |  |  |  +---w (event-filter)?
+    |  |  |  |  |  +--:(by-reference)
+    |  |  |  |  |  |  +---w event-filter-ref           event-filter-ref
+    |  |  |  |  |  +--:(within-subscription)
+    |  |  |  |  |     +---w (filter-spec)?
+    |  |  |  |  |        +--:(subtree-filter)
+    |  |  |  |  |        |  +---w subtree-filter?
+    |  |  |  |  |        +--:(xpath-filter)
+    |  |  |  |  |           +---w xpath-filter?              
+    |  |  |  |  |                              yang:xpath1.0 {nc:xpath}?
+    |  |  |  |  +---w stream                     stream
+    |  |  |  |  +---w replay-start-time?    yang:date-and-time {replay}?
+    |  |  |  +--:(yp:datastore)
+    |  |  |     +---w yp:source                  ds:datastore
+    |  |  |     +---w (yp:selected-content)?
+    |  |  |        +--:(yp:by-reference)
+    |  |  |        |  +---w yp:selection-filter-ref selection-filter-ref
+    |  |  |        +--:(yp:within-subscription)
+    |  |  |           +---w (yp:filter-spec)?
+    |  |  |              +--:(yp:subtree-filter)
+    |  |  |              |  +---w yp:subtree-filter?
+    |  |  |              +--:(yp:xpath-filter)
+    |  |  |                 +---w yp:xpath-filter? 
+    |  |  |                                  yang:xpath1.0 {nc:xpath}?
+    |  |  +---w stop-time?                 yang:date-and-time
+    |  |  +---w (yp:update-trigger)?
+    |  |  |  +--:(yp:periodic)
+    |  |  |  |  +---w yp:period                  yang:timeticks
+    |  |  |  |  +---w yp:anchor-time?            yang:date-and-time
+    |  |  |  +--:(yp:on-change) {on-change}?
+    |  |  |     +---w yp:dampening-period        yang:timeticks
+    |  |  |     +---w yp:no-synch-on-start?      empty
+    |  |  |     +---w yp:excluded-change*        change-type
+    |  |  +---w yp:dscp?                   inet:dscp
+    |  |  +---w yp:weighting?              uint8
+    |  |  +---w yp:dependency?             sn:subscription-id
+    |  +--ro output
+    |     +--ro subscription-result         subscription-result
+    |     +--ro (result)?
+    |        +--:(no-success)
+    |        |  +--ro filter-failure?             string
+    |        |  +--ro replay-start-time-hint?     yang:date-and-time
+    |        |  +--ro yp:period-hint?             yang:timeticks
+    |        |  +--ro yp:error-path?              string
+    |        |  +--ro yp:object-count-estimate?   uint32
+    |        |  +--ro yp:object-count-limit?      uint32
+    |        |  +--ro yp:kilobytes-estimate?      uint32
+    |        |  +--ro yp:kilobytes-limit?         uint32
+    |        +--:(success)
+    |           +--ro identifier                  subscription-id
+    +---x modify-subscription
+    |  +---w input
+    |  |  +---w identifier?            subscription-id
+    |  |  +---w (target)
+    |  |  |  +--:(stream)
+    |  |  |     +---w (event-filter)?
+    |  |  |        +--:(by-reference)
+    |  |  |        |  +---w event-filter-ref       event-filter-ref
+    |  |  |        +--:(within-subscription)
+    |  |  |           +---w (filter-spec)?
+    |  |  |              +--:(subtree-filter)
+    |  |  |              |  +---w subtree-filter?
+    |  |  |              +--:(xpath-filter)
+    |  |  |                 +---w xpath-filter?          
+    |  |  |                                    yang:xpath1.0 {nc:xpath}?
+    |  |  +---w stop-time?             yang:date-and-time
+    |  |  +---w (yp:update-trigger)?
+    |  |     +--:(yp:periodic)
+    |  |     |  +---w yp:period              yang:timeticks
+    |  |     |  +---w yp:anchor-time?        yang:date-and-time
+    |  |     +--:(yp:on-change) {on-change}?
+    |  |        +---w yp:dampening-period    yang:timeticks
+    |  +--ro output
+    |     +--ro subscription-result         subscription-result
+    |     +--ro (result)?
+    |        +--:(no-success)
+    |           +--ro filter-failure?             string
+    |           +--ro yp:period-hint?             yang:timeticks
+    |           +--ro yp:error-path?              string
+    |           +--ro yp:object-count-estimate?   uint32
+    |           +--ro yp:object-count-limit?      uint32
+    |           +--ro yp:kilobytes-estimate?      uint32
+    |           +--ro yp:kilobytes-limit?         uint32
+    +---x delete-subscription
+    |  +---w input
+    |  |  +---w identifier    subscription-id
+    |  +--ro output
+    |     +--ro subscription-result    subscription-result
+    +---x kill-subscription
+       +---w input
+       |  +---w identifier    subscription-id
+       +--ro output
+          +--ro subscription-result    subscription-result
+
+  notifications:
+    +---n replay-completed
+    |  +--ro identifier    subscription-id
+    +---n subscription-completed
+    |  +--ro identifier    subscription-id
+    +---n subscription-started
+    |  +--ro identifier                 subscription-id
+    |  +--ro encoding?                  encoding
+    |  +--ro (target)
+    |  |  +--:(stream)
+    |  |  |  +--ro (event-filter)?
+    |  |  |  |  +--:(by-reference)
+    |  |  |  |  |  +--ro event-filter-ref           event-filter-ref
+    |  |  |  |  +--:(within-subscription)
+    |  |  |  |     +--ro (filter-spec)?
+    |  |  |  |        +--:(subtree-filter)
+    |  |  |  |        |  +--ro subtree-filter?
+    |  |  |  |        +--:(xpath-filter)
+    |  |  |  |           +--ro xpath-filter?              
+    |  |  |  |                              yang:xpath1.0 {nc:xpath}?
+    |  |  |  +--ro stream                   stream
+    |  |  |  +--ro replay-start-time?       yang:date-and-time {replay}?
+    |  |  +--:(yp:datastore)
+    |  |     +--ro yp:source                  ds:datastore
+    |  |     +--ro (yp:selected-content)?
+    |  |        +--:(yp:by-reference)
+    |  |        |  +--ro yp:selection-filter-ref    selection-filter-ref
+    |  |        +--:(yp:within-subscription)
+    |  |           +--ro (yp:filter-spec)?
+    |  |              +--:(yp:subtree-filter)
+    |  |              |  +--ro yp:subtree-filter?
+    |  |              +--:(yp:xpath-filter)
+    |  |                 +--ro yp:xpath-filter?           
+    |  |                                       yang:xpath1.0 {nc:xpath}?
+    |  +--ro stop-time?                 yang:date-and-time
+    |  +--ro (yp:update-trigger)?
+    |  |  +--:(yp:periodic)
+    |  |  |  +--ro yp:period                  yang:timeticks
+    |  |  |  +--ro yp:anchor-time?            yang:date-and-time
+    |  |  +--:(yp:on-change) {on-change}?
+    |  |     +--ro yp:dampening-period        yang:timeticks
+    |  |     +--ro yp:no-synch-on-start?      empty
+    |  |     +--ro yp:excluded-change*        change-type
+    |  +--ro yp:dscp?                   inet:dscp
+    |  +--ro yp:weighting?              uint8
+    |  +--ro yp:dependency?             sn:subscription-id
+    +---n subscription-resumed
+    |  +--ro identifier    subscription-id
+    +---n subscription-modified
+    |  +--ro identifier                 subscription-id
+    |  +--ro encoding?                  encoding
+    |  +--ro (target)
+    |  |  +--:(stream)
+    |  |  |  +--ro (event-filter)?
+    |  |  |  |  +--:(by-reference)
+    |  |  |  |  |  +--ro event-filter-ref           event-filter-ref
+    |  |  |  |  +--:(within-subscription)
+    |  |  |  |     +--ro (filter-spec)?
+    |  |  |  |        +--:(subtree-filter)
+    |  |  |  |        |  +--ro subtree-filter?
+    |  |  |  |        +--:(xpath-filter)
+    |  |  |  |           +--ro xpath-filter?   yang:xpath1.0 {nc:xpath}?
+    |  |  |  +--ro stream                     stream
+    |  |  |  +--ro replay-start-time?       yang:date-and-time {replay}?
+    |  |  +--:(yp:datastore)
+    |  |     +--ro yp:source                  ds:datastore
+    |  |     +--ro (yp:selected-content)?
+    |  |        +--:(yp:by-reference)
+    |  |        |  +--ro yp:selection-filter-ref    selection-filter-ref
+    |  |        +--:(yp:within-subscription)
+    |  |           +--ro (yp:filter-spec)?
+    |  |              +--:(yp:subtree-filter)
+    |  |              |  +--ro yp:subtree-filter?
+    |  |              +--:(yp:xpath-filter)
+    |  |                 +--ro yp:xpath-filter? 
+    |  |                                       yang:xpath1.0 {nc:xpath}?
+    |  +--ro stop-time?                 yang:date-and-time
+    |  +--ro (yp:update-trigger)?
+    |  |  +--:(yp:periodic)
+    |  |  |  +--ro yp:period                  yang:timeticks
+    |  |  |  +--ro yp:anchor-time?            yang:date-and-time
+    |  |  +--:(yp:on-change) {on-change}?
+    |  |     +--ro yp:dampening-period        yang:timeticks
+    |  |     +--ro yp:no-synch-on-start?      empty
+    |  |     +--ro yp:excluded-change*        change-type
+    |  +--ro yp:dscp?                   inet:dscp
+    |  +--ro yp:weighting?              uint8
+    |  +--ro yp:dependency?             sn:subscription-id
+    +---n subscription-terminated
+    |  +--ro identifier        subscription-id
+    |  +--ro error-id          subscription-errors
+    |  +--ro filter-failure?   string
+    +---n subscription-suspended
+       +--ro identifier        subscription-id
+       +--ro error-id          subscription-errors
+       +--ro filter-failure?   string
+module: ietf-yang-push
+
+  rpcs:
+    +---x resynch-subscription {on-change}?
+       +---w input
+       |  +---w identifier    sn:subscription-id
+       +--ro output
+          +--ro subscription-result    sn:subscription-result
+
+  notifications:
+    +---n push-update
+    |  +--ro subscription-id?      sn:subscription-id
+    |  +--ro time-of-update?       yang:date-and-time
+    |  +--ro updates-not-sent?     empty
+    |  +--ro datastore-contents?
+    +---n push-change-update {on-change}?
+       +--ro subscription-id?     sn:subscription-id
+       +--ro time-of-update?      yang:date-and-time
+       +--ro updates-not-sent?    empty
+       +--ro datastore-changes?
