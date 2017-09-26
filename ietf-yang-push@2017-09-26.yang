@@ -243,11 +243,11 @@ module ietf-yang-push {
         reference "RFC 6241, Section 6.";
       }
       leaf xpath-filter {
-        if-feature nc:xpath;
         type yang:xpath1.0;
         description
           "This parameter contains an XPath expression identifying the 
 		  portions of the target datastore to retrieve.";
+		reference "http://www.w3.org/TR/1999/REC-xpath-19991116";
       }
     }   
   }
