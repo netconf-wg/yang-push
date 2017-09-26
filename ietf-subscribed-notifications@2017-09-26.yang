@@ -14,9 +14,6 @@ module ietf-subscribed-notifications {
   import ietf-interfaces {
     prefix if;
   }
-  import ietf-netconf {
-    prefix nc;
-  }
 
   organization "IETF";
   contact
@@ -426,7 +423,6 @@ module ietf-subscribed-notifications {
         reference "RFC 6241, Section 6.";
       }
       leaf xpath-filter {
-        if-feature nc:xpath;
         type yang:xpath1.0;
         description
           "Event stream evaluation criteria encoded in a syntax of xpath
