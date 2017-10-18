@@ -1,0 +1,392 @@
+
+
+
+
+Network Working Group                                           A. Clemm
+Internet-Draft                              Futurewei Technologies, Inc.
+Intended status: Informational                                   E. Voit
+Expires: April 19, 2018                                    Cisco Systems
+                                                                  X. Liu
+                                                                   Jabil
+                                                              I. Bryskin
+                                                                 T. Zhou
+                                                                G. Zheng
+                                                                  Huawei
+                                                             H. Birkholz
+                                                          Fraunhofer SIT
+                                                        October 16, 2017
+
+
+           Smart filters for Push Updates - Problem Statement
+              draft-clemm-netconf-push-smart-filters-ps-00
+
+Abstract
+
+   This document defines a problem statement for Smart Filters for Push
+   Updates.  Smart Filters for Push Updates (referred to simply as
+   "Smart Filters" in the context of this document) allows to filter
+   push updates based on values of pushed objects and/or state, such as
+   previous updates.  Smart Filters provide an important building block
+   for service assurance and network automation.
+
+Status of This Memo
+
+   This Internet-Draft is submitted in full conformance with the
+   provisions of BCP 78 and BCP 79.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF).  Note that other groups may also distribute
+   working documents as Internet-Drafts.  The list of current Internet-
+   Drafts is at https://datatracker.ietf.org/drafts/current/.
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+   This Internet-Draft will expire on April 19, 2018.
+
+
+
+
+
+
+
+
+Clemm, et al.            Expires April 19, 2018                 [Page 1]
+
+Internet-Draft                                              October 2017
+
+
+Copyright Notice
+
+   Copyright (c) 2017 IETF Trust and the persons identified as the
+   document authors.  All rights reserved.
+
+   This document is subject to BCP 78 and the IETF Trust's Legal
+   Provisions Relating to IETF Documents
+   (https://trustee.ietf.org/license-info) in effect on the date of
+   publication of this document.  Please review these documents
+   carefully, as they describe your rights and restrictions with respect
+   to this document.  Code Components extracted from this document must
+   include Simplified BSD License text as described in Section 4.e of
+   the Trust Legal Provisions and are provided without warranty as
+   described in the Simplified BSD License.
+
+Table of Contents
+
+   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   2
+   2.  Key Words . . . . . . . . . . . . . . . . . . . . . . . . . .   3
+   3.  Definitions and Acronyms  . . . . . . . . . . . . . . . . . .   3
+   4.  Problem Statement . . . . . . . . . . . . . . . . . . . . . .   3
+   5.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   5
+   6.  Security Considerations . . . . . . . . . . . . . . . . . . .   5
+   7.  Normative References  . . . . . . . . . . . . . . . . . . . .   5
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .   6
+
+1.  Introduction
+
+   YANG-Push [yang-push] allows client applications to subscribe to
+   continuous datastore updates without needing to poll.  YANG-Push
+   subscriptions allow client applications to select which datanodes are
+   of interest.  For this purpose, filters that act as node selectors
+   are offered.  However, what is currently not supported are filters
+   that filter updates based on values, such as sending updates only
+   when the value falls within a certain range.  Also not supported are
+   filters that would require additional state, such as sending updates
+   only when the value exceeds a certain threshold for the first time
+   but not again until the threshold is cleared.  We refer to such
+   filters as "smart filters", with further subcategories of "smart
+   stateless filters" and "smart stateful filters", respectively.
+
+   Smart filters involve more complex subscription and implementation
+   semantics than the simple selection filters that are currently
+   offered as part of YANG-Push.  They involve post processing of
+   updates that goes beyond basic update generation for polling
+   avoidance and place additional intelligence at the server.  Because
+   of this, smart filter functionality was not included in the YANG-Push
+   specification, although it was recognized that YANG-Push could be
+
+
+
+Clemm, et al.            Expires April 19, 2018                 [Page 2]
+
+Internet-Draft                                              October 2017
+
+
+   extended to include such functionality if needed.  This is the
+   purpose of this specification.
+
+   Smart filters facilitate service assurance, because they allow client
+   applications to focus on "outliers" and updates that signify
+   exceptions and conditions of interest have the biggest operational
+   significance.  They save network resources by avoiding the need to
+   stream updates that would be discarded anyway, and allow applications
+   to scale better since larger networks imply a larger amount of smart
+   filtering operations delegated away from the application to the
+   network.  Smart filters also facilitate network automation as they
+   constitute an important ingredient to specify triggers for automated
+   actions.
+
+2.  Key Words
+
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
+   "OPTIONAL" in this document are to be interpreted as described in BCP
+   14 [RFC2119] [RFC8174] when, and only when, they appear in all
+   capitals, as shown here.
+
+3.  Definitions and Acronyms
+
+      Smart Filter: A filter that involves some processing, such as
+      comparing values or differentiating behavior depending on state.
+
+      TCA: Threshold Crossing Alert.
+
+      YANG-Push: A server capability that allows client applications to
+      subscribe to network management datastore updates.
+
+4.  Problem Statement
+
+   YANG-Push provides client applications with the ability to subscribe
+   to continuous updates from network management datastores, obviating
+   the need to perform polling and resulting in more robust and
+   efficient applications.  However, many applications do not require
+   every update, only updates that are of certain interest.
+
+   For example, an update concerning interface utilization may be only
+   needed when a certain utilization level is breached.  Sending
+   continuous updates when utilization is low might divert processing
+   resources away from updates regarding interfaces whose utilization
+   level may reach a critical point that requires attention.  Doing so
+   will require a filter based on an object value.  Even sending
+   continuous updates when utilization is high may be too much and
+   counterproductive.  It may be sufficient to send an update when a
+
+
+
+Clemm, et al.            Expires April 19, 2018                 [Page 3]
+
+Internet-Draft                                              October 2017
+
+
+   threshold is breached to raise a flag of attention, but then not to
+   continue sending updates while the condition still persists but
+   simply let the client application know when the threshold is cleared.
+   This behavior cannot be accomplished simply by a value-based filter,
+   but requires additional state to be maintained (so that the server
+   has a memory whether or not the condition of a breached threshold has
+   already been reported in prior update cycles).
+
+   What is needed are "Smart Filters" that provide the ability to apply
+   filters based on object values, possibly also state state.  Smart
+   Filters are useful for Service Assurance applications that need to
+   monitor operational data for values that fall outside normal
+   operational ranges.  They are also useful for network automation, in
+   which automated actions are automatically triggered based on when
+   certain events in the network occur while certain conditions hold.  A
+   YANG-Push subscription with a smart filter can in effect act as a
+   source for such events.  Combined with an optional check for a
+   condition when an event is observed, this can serve as the basis of
+   action triggers.
+
+   Smart Filters for Push Updates will provide support for the following
+   features:
+
+   o  Support for smart filter extensions to YANG-Push subscriptions.
+      The targeted model takes a "base" YANG-Push subscription and
+      subjects updates to an additional filtering stage that is based on
+      value.
+
+   o  Support for refined on-change update semantics that allow client
+      to distinguish whether object values were omitted or included
+      because the object was created or deleted, or because the object's
+      value fell outside filter range.
+
+   o  Support for selected stateful filters:
+
+      *  This includes specifically support for generalized "threshold
+         crossing alert" filters, or filters that provide an update only
+         when an object's value passes a filter for the first time, and
+         not again until the object's value passes a counter filter.  In
+         effect, the support involves attaching filter and counter
+         filter to an object, including a switch at the object
+         indicating which filter is in effect, and providing a
+         distinction in the update which filter (e.g. onset of clear)
+         was applied.
+
+      *  It may include additional filters, such a "recent high water
+         mark" filters that allow to specify a time horizon until the
+         current high water mark clears.  A recent high water mark
+
+
+
+Clemm, et al.            Expires April 19, 2018                 [Page 4]
+
+Internet-Draft                                              October 2017
+
+
+         filter sends an update to an object only if its new value is
+         greater than the last value that had been previously reported.
+
+   It is easy to conceive of filters that are very smart and powerful
+   yet also very complex.  While filters as defined in YANG-Push may be
+   a tad too simple for the applications envisioned here, it is
+   important to keep filters still simple enough to ensure broad
+   implementation and support by networking devices.  The purpose of
+   smart filters defined in this effort is to address the 90% of cases
+   that can be addressed using 10% of the complexity.  Items like the
+   following will therefore be outside the scope:
+
+   o  Filters that involve freely programmable logic.
+
+   o  Filters that aggregate or otherwise process information over time.
+      An example would be filters that compute an aggregate over a time
+      series of data (e.g. an object's average or top percentile value)
+
+   o  Filters that aggregate or compare an object's values with those of
+      other objects (e.g. the maximum or average from objects over a
+      list).
+
+5.  IANA Considerations
+
+   Not applicable
+
+6.  Security Considerations
+
+   The application of smart filters requires a certain amount of
+   processing resources at the server.  An attacker could attempt to
+   attack a server by creating YANG-push subscriptions with a large
+   number of complex smart filters in an attempt to diminish server
+   resources.  Server implementations can guard against such scenarios
+   in several ways.  For one, they can implement NACM in order to
+   require proper authorization for requests to be made.  Second, server
+   implementations can reject requests made for a a larger number of
+   smart filters than the implementation can reasonably sustain.
+
+7.  Normative References
+
+   [notif-sub]
+              Voit, E., Clemm, A., Gonzalez Prieto, A., Nilsen-Nygaard,
+              E., and A. Tripathy, "Custom subscription to event
+              notifications", July 2017,
+              <https://datatracker.ietf.org/doc/
+              draft-ietf-netconf-subscribed-notifications/>.
+
+
+
+
+
+Clemm, et al.            Expires April 19, 2018                 [Page 5]
+
+Internet-Draft                                              October 2017
+
+
+   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
+              Requirement Levels", BCP 14, RFC 2119,
+              DOI 10.17487/RFC2119, March 1997,
+              <https://www.rfc-editor.org/info/rfc2119>.
+
+   [RFC3688]  Mealling, M., "The IETF XML Registry", BCP 81, RFC 3688,
+              DOI 10.17487/RFC3688, January 2004,
+              <https://www.rfc-editor.org/info/rfc3688>.
+
+   [RFC6020]  Bjorklund, M., Ed., "YANG - A Data Modeling Language for
+              the Network Configuration Protocol (NETCONF)", RFC 6020,
+              DOI 10.17487/RFC6020, October 2010,
+              <https://www.rfc-editor.org/info/rfc6020>.
+
+   [RFC6241]  Enns, R., Ed., Bjorklund, M., Ed., Schoenwaelder, J., Ed.,
+              and A. Bierman, Ed., "Network Configuration Protocol
+              (NETCONF)", RFC 6241, DOI 10.17487/RFC6241, June 2011,
+              <https://www.rfc-editor.org/info/rfc6241>.
+
+   [RFC7950]  Bjorklund, M., Ed., "The YANG 1.1 Data Modeling Language",
+              RFC 7950, DOI 10.17487/RFC7950, August 2016,
+              <https://www.rfc-editor.org/info/rfc7950>.
+
+   [RFC8040]  Bierman, A., Bjorklund, M., and K. Watsen, "RESTCONF
+              Protocol", RFC 8040, DOI 10.17487/RFC8040, January 2017,
+              <https://www.rfc-editor.org/info/rfc8040>.
+
+   [RFC8072]  Bierman, A., Bjorklund, M., and K. Watsen, "YANG Patch
+              Media Type", RFC 8072, DOI 10.17487/RFC8072, February
+              2017, <https://www.rfc-editor.org/info/rfc8072>.
+
+   [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
+              2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
+              May 2017, <https://www.rfc-editor.org/info/rfc8174>.
+
+   [yang-push]
+              Clemm, A., Voit, E., Gonzalez Prieto, A., Tripathy, A.,
+              Nilsen-Nygaard, E., Bierman, A., and B. Lengyel,
+              "Subscribing to YANG datastore push updates", August 2017,
+              <https://datatracker.ietf.org/doc/
+              draft-ietf-netconf-yang-push/>.
+
+Authors' Addresses
+
+
+
+
+
+
+
+
+Clemm, et al.            Expires April 19, 2018                 [Page 6]
+
+Internet-Draft                                              October 2017
+
+
+   Alexander Clemm
+   Futurewei Technologies, Inc.
+   2330 Central Expressway
+   Santa Clara,  CA 95050
+   USA
+
+   Email: ludwig@clemm.org
+
+
+   Eric Voit
+   Cisco Systems
+
+   Email: evoit@cisco.com
+
+
+   Xufeng Liu
+   Jabil
+
+
+   Igor Bryskin
+   Huawei
+
+
+   Tianran Zhou
+   Huawei
+
+
+   Guangying Zheng
+   Huawei
+
+
+   Henk Birkholz
+   Fraunhofer SIT
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Clemm, et al.            Expires April 19, 2018                 [Page 7]
