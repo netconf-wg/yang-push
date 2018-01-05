@@ -713,6 +713,11 @@ module ietf-yang-push {
     }
   }
 
+ /* The following two augmentations compile fine in  pyang, confdc, and
+ yanglint.  However the ABNF of RFC7950 says it should not.  Leaving 
+ this in in case anyone wants to insist that the allowable error type 
+ for these two notifications must be explicit in the YANG model.
+  
   augment "/sn:subscription-terminated" {
     description
       "This augmentation replaces the list of valid 'reason' identityref 
@@ -739,7 +744,8 @@ module ietf-yang-push {
 		   'synchronization-size'
 	       'unsupportable-volume'  ";
   }
-  
+*/  
+
   /*
    * DATA NODES
    */
